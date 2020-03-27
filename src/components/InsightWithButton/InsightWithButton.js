@@ -71,7 +71,7 @@ const DescriptionText = styled(BaseText)`
 `;
 
 const InsightWrapper = styled.View`
-  padding: 30px ${spacing.layoutSides}px 15px;
+  padding: 24px ${spacing.layoutSides}px 9px;
 `;
 
 const SpinnerWrapper = styled.View`

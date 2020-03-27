@@ -57,6 +57,7 @@ import { PAYMENT_COMPLETED, SMART_WALLET_UPGRADE_STATUSES } from 'constants/smar
 import { ACCOUNT_TYPES } from 'constants/accountsConstants';
 import { BLOCKCHAIN_NETWORK_TYPES } from 'constants/blockchainNetworkConstants';
 import { ACCOUNTS, RECOVERY_SETTINGS, SECURITY_SETTINGS } from 'constants/navigationConstants';
+import { LIGHT_THEME } from 'constants/appSettingsConstants';
 
 // utils
 import { getAccountName } from 'utils/accounts';
@@ -300,7 +301,7 @@ class AssetsScreen extends React.Component<Props, State> {
   };
 
   render() {
-    const { activeAccount } = this.props;
+    const { activeAccount, theme } = this.props;
     if (!activeAccount) return null;
 
     const screenInfo = this.getScreenInfo();
@@ -310,6 +311,8 @@ class AssetsScreen extends React.Component<Props, State> {
       screenView,
       customHeaderButtonProps,
     } = screenInfo;
+
+    const isLightTheme = theme.current === LIGHT_THEME;
 
     return (
       <ContainerWithHeader
@@ -327,6 +330,7 @@ class AssetsScreen extends React.Component<Props, State> {
             title: 'Assets',
           }],
           noBack: true,
+          noBottomBorder: isLightTheme,
         }}
         inset={{ bottom: 0 }}
       >

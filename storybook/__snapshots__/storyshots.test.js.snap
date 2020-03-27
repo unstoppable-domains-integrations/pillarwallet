@@ -669,10 +669,10 @@ exports[`Storyshots InsightWithButton with list 1`] = `
     style={
       Array [
         Object {
-          "paddingBottom": 15,
+          "paddingBottom": 9,
           "paddingLeft": 16,
           "paddingRight": 16,
-          "paddingTop": 30,
+          "paddingTop": 24,
         },
         undefined,
       ]
@@ -1037,10 +1037,10 @@ exports[`Storyshots InsightWithButton without list 1`] = `
     style={
       Array [
         Object {
-          "paddingBottom": 15,
+          "paddingBottom": 9,
           "paddingLeft": 16,
           "paddingRight": 16,
-          "paddingTop": 30,
+          "paddingTop": 24,
         },
         undefined,
       ]
@@ -1250,10 +1250,10 @@ Array [
     style={
       Array [
         Object {
-          "paddingBottom": 15,
+          "paddingBottom": 9,
           "paddingLeft": 16,
           "paddingRight": 16,
-          "paddingTop": 30,
+          "paddingTop": 24,
         },
         undefined,
       ]

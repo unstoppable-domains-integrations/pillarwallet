@@ -33,7 +33,7 @@ import ListItemWithImage from 'components/ListItem/ListItemWithImage';
 import Tabs from 'components/Tabs';
 import Insight from 'components/Insight';
 import InsightWithButton from 'components/InsightWithButton';
-import { Wrapper, ScrollWrapper } from 'components/Layout';
+import { Wrapper, ScrollWrapper, Spacing } from 'components/Layout';
 import SearchBlock from 'components/SearchBlock';
 import Toast from 'components/Toast';
 import { ListItemChevron } from 'components/ListItem/ListItemChevron';
@@ -483,6 +483,7 @@ class WalletView extends React.Component<Props, State> {
             )
           )
         }
+        <Spacing h={14} />
         {!isInSearchAndFocus && !blockAssetsView &&
         <Tabs
           tabs={assetsTabs}

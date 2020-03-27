@@ -90,8 +90,8 @@ const ListHeaderWrapper = styled.View`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: ${spacing.medium}px ${spacing.large}px 0;
-  margin-bottom: 6px;
+  padding: 36px ${spacing.layoutSides}px 0;
+  margin-bottom: 8px;
 `;
 
 const HeaderTitle = styled(MediumText)`
@@ -140,7 +140,7 @@ class AssetsList extends React.Component<Props, State> {
 
     return (
       <ListHeaderWrapper>
-        <HeaderTitle>{`Wallet balance ${walletBalance}`}</HeaderTitle>
+        <HeaderTitle>{`Balance ${walletBalance}`}</HeaderTitle>
       </ListHeaderWrapper>
     );
   };
