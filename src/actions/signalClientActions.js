@@ -22,7 +22,6 @@ import isEmpty from 'lodash.isempty';
 
 import ChatService from 'services/chat';
 import { updateSignalInitiatedStateAction } from 'actions/sessionActions';
-import { getActiveAccountAddress } from 'utils/accounts';
 import { firebaseMessaging } from 'services/firebase';
 
 import type { Dispatch, GetState } from 'reducers/rootReducer';
@@ -51,15 +50,12 @@ export const signalInitAction = (credentials?: SignalCredentials) => {
           },
         },
         oAuthTokens: { data: OAuthTokensObject },
-        accounts: { data: accounts },
       } = getState();
-      const ethAddress = getActiveAccountAddress(accounts);
       credentials = {
         ...OAuthTokensObject,
         userId,
         username,
         walletId,
-        ethAddress,
         fcmToken,
       };
     }

@@ -24,6 +24,5 @@ export type SignalCredentials = {
   username: string,
   userId: string,
   walletId: string,
-  ethAddress: string,
   fcmToken?: string,
 }
