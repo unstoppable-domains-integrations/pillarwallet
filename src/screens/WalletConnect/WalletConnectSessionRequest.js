@@ -34,7 +34,7 @@ import Button from 'components/Button';
 import { spacing, fontSizes } from 'utils/variables';
 import { images } from 'utils/images';
 
-import { approveSessionAction, rejectSessionAction } from 'actions/walletConnectActions';
+import { approveSessionAction, rejectSessionAction, walletConnectCallRejected } from 'actions/walletConnectActions';
 
 import type { Theme } from 'models/Theme';
 
@@ -43,6 +43,7 @@ type Props = {
   navigation: NavigationScreenProp<*>,
   approveSession: Function,
   rejectSession: Function,
+  removeRequest: Function,
   theme: Theme,
 };
 
@@ -68,16 +69,20 @@ const OptionButton = styled(Button)`
 
 class WalletConnectSessionRequestScreen extends React.Component<Props> {
   handleSessionApproval = () => {
-    const { navigation, approveSession } = this.props;
+    const { navigation, approveSession, removeRequest } = this.props;
     const peerId = navigation.getParam('peerId', {});
+    const callId = navigation.getParam('callId', {});
+    removeRequest(callId);
     Keyboard.dismiss();
     approveSession(peerId);
     navigation.goBack(null);
   };
 
   handleSessionRejection = () => {
-    const { navigation, rejectSession } = this.props;
+    const { navigation, rejectSession, removeRequest } = this.props;
     const peerId = navigation.getParam('peerId', {});
+    const callId = navigation.getParam('callId', {});
+    removeRequest(callId);
     Keyboard.dismiss();
     rejectSession(peerId);
     navigation.goBack(null);
@@ -99,7 +104,6 @@ class WalletConnectSessionRequestScreen extends React.Component<Props> {
       <ContainerWithHeader
         headerProps={{
           centerItems: [{ title: 'Wallet Connect' }],
-          customOnBack: this.handleSessionRejection,
         }}
       >
         <ScrollWrapper regularPadding>
@@ -158,6 +162,7 @@ class WalletConnectSessionRequestScreen extends React.Component<Props> {
 const mapDispatchToProps = dispatch => ({
   approveSession: peerId => dispatch(approveSessionAction(peerId)),
   rejectSession: peerId => dispatch(rejectSessionAction(peerId)),
+  removeRequest: callId => dispatch(walletConnectCallRejected(callId)),
 });
 
 export default withTheme(connect(null, mapDispatchToProps)(WalletConnectSessionRequestScreen));

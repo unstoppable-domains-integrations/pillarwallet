@@ -26,7 +26,7 @@ import { createStructuredSelector } from 'reselect';
 import type { NavigationScreenProp } from 'react-navigation';
 
 // actions
-import { rejectCallRequestAction } from 'actions/walletConnectActions';
+import { rejectCallRequestAction, rejectSessionAction, walletConnectCallRejected } from 'actions/walletConnectActions';
 
 // constants
 import { TOKEN_TRANSFER } from 'constants/functionSignaturesConstants';
@@ -53,6 +53,8 @@ type Props = {
   requests: CallRequest[],
   session: Object,
   rejectCallRequest: (callId: number) => void,
+  rejectSession: (peerId: string) => void,
+  removeRequest: (callId: number) => void,
   supportedAssets: Asset[],
 };
 
@@ -154,6 +156,11 @@ export default function withWCRequests(WrappedComponent: React.ComponentType<*>)
 
     rejectWCRequest = (request: CallRequest) => this.props.rejectCallRequest(request.callId);
 
+    rejectSessionRequest = (request: CallRequest) => {
+      this.props.removeRequest(request.callId);
+      this.props.rejectSession(request.peerId);
+    }
+
     handleNoteChange = (text) => this.setState({ note: text });
 
     render() {
@@ -161,6 +168,7 @@ export default function withWCRequests(WrappedComponent: React.ComponentType<*>)
         <WrappedComponent
           acceptWCRequest={this.acceptWCRequest}
           rejectWCRequest={this.rejectWCRequest}
+          rejectSession={this.rejectSessionRequest}
           getTransactionDetails={this.getTransactionDetails}
           getTransactionPayload={this.getTransactionPayload}
           isUnsupportedTransaction={this.isUnsupportedTransaction}
@@ -195,6 +203,8 @@ export default function withWCRequests(WrappedComponent: React.ComponentType<*>)
 
   const mapDispatchToProps = dispatch => ({
     rejectCallRequest: (callId: number) => dispatch(rejectCallRequestAction(callId)),
+    rejectSession: peerId => dispatch(rejectSessionAction(peerId)),
+    removeRequest: callId => dispatch(walletConnectCallRejected(callId)),
   });
 
   return withNavigation(connect(combinedMapStateToProps, mapDispatchToProps)(ComponentWithWCTransactions));

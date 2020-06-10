@@ -30,7 +30,7 @@ import { spacing, fontSizes } from 'utils/variables';
 import { getThemeColors } from 'utils/themes';
 import type { CallRequest } from 'models/WalletConnect';
 import type { Theme } from 'models/Theme';
-import { WALLETCONNECT_CALL_REQUEST_SCREEN } from 'constants/navigationConstants';
+import { WALLETCONNECT_CALL_REQUEST_SCREEN, WALLETCONNECT_SESSION_REQUEST_SCREEN } from 'constants/navigationConstants';
 import withWCRequests from './withWCRequests';
 
 
@@ -38,6 +38,7 @@ type Props = {
   navigation: NavigationScreenProp<*>,
   requests: CallRequest[],
   rejectWCRequest: (request: CallRequest) => void,
+  rejectSession: (request: CallRequest) => void,
   theme: Theme,
   showLastOneOnly?: boolean,
 };
@@ -71,8 +72,13 @@ const Header = styled(MediumText)`
 
 class Requests extends React.Component<Props> {
   renderRequest = ({ item }) => {
-    const { theme, rejectWCRequest, navigation } = this.props;
-    const { name, icon } = item;
+    const {
+      theme, rejectWCRequest, rejectSession, navigation,
+    } = this.props;
+    const {
+      name, icon, method, peerId, peerMeta,
+    } = item;
+    const isSessionRequest = method === 'session_request';
     const colors = getThemeColors(theme);
 
     return (
@@ -94,7 +100,7 @@ class Requests extends React.Component<Props> {
               margin={0}
               icon="close"
               fontSize={fontSizes.regular}
-              onPress={() => rejectWCRequest(item)}
+              onPress={() => isSessionRequest ? rejectSession(item) : rejectWCRequest(item)}
             />
             <ActionCircleButton
               color={colors.control}
@@ -102,7 +108,11 @@ class Requests extends React.Component<Props> {
               accept
               icon="check"
               fontSize={fontSizes.small}
-              onPress={() => navigation.navigate(WALLETCONNECT_CALL_REQUEST_SCREEN, { callId: item.callId })}
+              onPress={() =>
+                navigation.navigate(
+                  isSessionRequest ? WALLETCONNECT_SESSION_REQUEST_SCREEN : WALLETCONNECT_CALL_REQUEST_SCREEN,
+                  { peerId, peerMeta, callId: item.callId })
+              }
             />
           </ItemContainer>
         </ShadowedCard>

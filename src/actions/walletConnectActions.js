@@ -117,7 +117,7 @@ const walletConnectSessionsKilled = (connectors: Connector[]): WalletConnectSess
   connectors,
 });
 
-const walletConnectCallRejected = (callId: number): WalletConnectCallRejected => ({
+export const walletConnectCallRejected = (callId: number): WalletConnectCallRejected => ({
   type: WALLETCONNECT_CALL_REJECTED,
   callId,
 });
@@ -216,6 +216,25 @@ const subscribeToSessionRequestEvent = (connector: Connector) => {
         return;
       }
       dispatch(walletConnectSessionReceived());
+
+      const {
+        icons, name, url, description,
+      } = connector.peerMeta || {
+        icons: [], name: '', url: '', description: '',
+      };
+      const request: CallRequest = {
+        name,
+        url,
+        description,
+        icon: get(icons, '[0]'),
+        callId: payload.id,
+        peerId: connector.peerId,
+        method: payload.method,
+        params: payload.params,
+        peerMeta: connector.peerMeta,
+      };
+
+      dispatch(walletConnectCallRequest(request));
 
       navigate(
         NavigationActions.navigate({

@@ -49,6 +49,8 @@ export type CallRequest = {|
   name: string,
   url: string,
   params: any[],
+  peerMeta?: ?ClientMeta,
+  description?: string,
 |};
 
 export type SessionStatus = {|
