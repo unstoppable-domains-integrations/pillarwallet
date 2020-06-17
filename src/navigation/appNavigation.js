@@ -98,6 +98,7 @@ import ExploreAppsScreen from 'screens/ExploreApps';
 import WalletActivatedScreen from 'screens/WalletActivated';
 import EmailPhoneMissingScreen from 'screens/ReferFriends/EmailPhoneMissing';
 import ReferralIncomingRewardScreen from 'screens/ReferFriends/ReferralIncomingReward';
+import StoryFrameScreen from 'screens/StoryFrame';
 
 // components
 import RetryApiRegistration from 'components/RetryApiRegistration';
@@ -223,6 +224,8 @@ import {
   REFERRAL_CONTACT_INFO_MISSING,
   REFERRAL_INCOMING_REWARD,
   SEND_BITCOIN_WITH_RECEIVER_ADDRESS_FLOW,
+  PILLAR_STORIES,
+  STORY_FRAME,
 } from 'constants/navigationConstants';
 import { PENDING, REGISTERED } from 'constants/userConstants';
 
@@ -656,6 +659,15 @@ const tankWithdrawalFlow = createStackNavigator({
 
 tankWithdrawalFlow.navigationOptions = hideTabNavigatorOnChildView;
 
+// STORIES FLOW
+const storiesFlow = createStackNavigator(
+  {
+    [STORY_FRAME]: StoryFrameScreen,
+  },
+  StackNavigatorConfig,
+);
+walletConnectFlow.navigationOptions = hideTabNavigatorOnChildView;
+
 const menuFlow = createStackNavigator({
   [MENU]: MenuScreen,
   [SECURITY_SETTINGS]: SecuritySettingsScreen,
@@ -697,6 +709,7 @@ const AppFlowNavigation = createStackNavigator(
     [REFERRAL_SENT]: ReferralSentScreen,
     [REFERRAL_CONTACT_INFO_MISSING]: EmailPhoneMissingScreen,
     [REFERRAL_INCOMING_REWARD]: ReferralIncomingRewardScreen,
+    [PILLAR_STORIES]: storiesFlow,
   },
   modalTransition,
 );

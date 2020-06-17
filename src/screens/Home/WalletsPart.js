@@ -26,6 +26,7 @@ import styled from 'styled-components/native';
 
 // components
 import PortfolioBalance from 'components/PortfolioBalance';
+import PillarStories from 'components/PillarStories';
 
 // constants
 import { defaultFiatCurrency } from 'constants/assetsConstants';
@@ -140,11 +141,13 @@ class WalletsPart extends React.Component<Props, State> {
 
     return (
       <Wrapper>
-        <PortfolioBalance
-          fiatCurrency={fiatCurrency}
-          showBalance={!hideBalance}
-          toggleBalanceVisibility={toggleBalance}
-        />
+        <PillarStories>
+          <PortfolioBalance
+            fiatCurrency={fiatCurrency}
+            showBalance={!hideBalance}
+            toggleBalanceVisibility={toggleBalance}
+          />
+        </PillarStories>
         <ActionButtons
           wallets={availableWallets}
           changeWalletAction={this.changeAcc}
