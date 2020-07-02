@@ -38,6 +38,8 @@ import {
   groupPPNTransactions,
   getUsernameOrAddress,
   isBTCAddress,
+  isFailedTransaction,
+  isTimedOutTransaction,
 } from 'utils/feedData';
 import { findMatchingContact } from 'utils/contacts';
 import { findAccountByAddress, getAccountName } from 'utils/accounts';
@@ -64,6 +66,7 @@ import { COLLECTIBLE_TRANSACTION } from 'constants/collectiblesConstants';
 import {
   TRANSACTION_EVENT,
   TX_PENDING_STATUS,
+  TX_FAILED_STATUS,
 } from 'constants/historyConstants';
 import {
   PAYMENT_NETWORK_ACCOUNT_DEPLOYMENT,
@@ -73,7 +76,12 @@ import {
 } from 'constants/paymentNetworkConstants';
 import { USER_EVENT, PPN_INIT_EVENT, WALLET_CREATE_EVENT, WALLET_BACKUP_EVENT } from 'constants/userEventsConstants';
 import { BADGE_REWARD_EVENT } from 'constants/badgesConstants';
-import { SET_SMART_WALLET_ACCOUNT_ENS, SMART_WALLET_SWITCH_TO_GAS_TOKEN_RELAYER } from 'constants/smartWalletConstants';
+import {
+  SET_SMART_WALLET_ACCOUNT_ENS,
+  SMART_WALLET_ACCOUNT_DEVICE_ADDED,
+  SMART_WALLET_ACCOUNT_DEVICE_REMOVED,
+  SMART_WALLET_SWITCH_TO_GAS_TOKEN_RELAYER,
+} from 'constants/smartWalletConstants';
 import { ACCOUNT_TYPES } from 'constants/accountsConstants';
 import { SDK_PROVIDER } from 'react-native-dotenv';
 
@@ -129,10 +137,12 @@ export type EventData = {
   rejectInvitation?: Function,
   acceptInvitation?: Function,
   avatarUrl?: string,
+  username?: string,
   itemImageUrl?: string,
   iconName?: ?string,
   iconColor?: string,
   itemValue?: string,
+  fullItemValue?: string,
   valueColor?: string,
   customAddon?: React.Node,
   itemStatusIcon?: string,
@@ -144,6 +154,8 @@ export type EventData = {
   isReceived?: boolean,
   isBetweenAccounts?: boolean,
   collectibleUrl?: string,
+  statusIconColor?: ?string,
+  isFailed?: boolean,
 };
 
 const NAMES = {
@@ -201,6 +213,10 @@ export class ActivityFeedItem extends React.Component<Props> {
 
     return addressesEqual(to, activeAccountAddress) || bitcoinAddresses.some(e => e.address === to);
   };
+
+  isZeroValue(value: string): boolean {
+    return value === '0' || value === '0.0';
+  }
 
   getRelevantAddress = (event: Object): string => {
     const isReceived = this.isReceived(event);
@@ -304,18 +320,29 @@ export class ActivityFeedItem extends React.Component<Props> {
     const assetSymbol = event ? event.asset : null;
     const decimalPlaces = getDecimalPlaces(assetSymbol);
     const formattedValue = formatAmount(value, decimalPlaces);
+    const formattedFullValue = formatAmount(value);
     const directionIcon = isReceived ? 'received' : 'sent';
-    let directionSymbol = isReceived ? '+' : '-';
+    let directionSymbol = isReceived ? '+ ' : '- ';
+    let PPNDirectionSymbol = event.tag === PAYMENT_NETWORK_ACCOUNT_TOPUP
+    && !isAssetView && !event.smartWalletEvent ? '+ ' : '- ';
 
-    if (value === '0.0') {
+    const isFailed = isFailedTransaction(event) || isTimedOutTransaction(event);
+
+    if (this.isZeroValue(value) || isFailed) {
       directionSymbol = '';
+      PPNDirectionSymbol = '';
     }
 
     const isPending = isPendingTransaction(event);
 
     let data: EventData = {};
 
-    const { smartWalletIcon, PPNIcon, keyWalletIcon } = images(theme);
+    const {
+      smartWalletIcon,
+      PPNIcon,
+      roundedPhoneIcon,
+      keyWalletIcon,
+    } = images(theme);
 
     switch (event.tag) {
       case PAYMENT_NETWORK_ACCOUNT_DEPLOYMENT:
@@ -331,7 +358,8 @@ export class ActivityFeedItem extends React.Component<Props> {
             label: NAMES.PPN_NETWORK,
             subtext: `from ${NAMES.SMART_WALLET}`,
             itemImageSource: PPNIcon,
-            itemValue: `- ${formattedValue} ${event.asset}`,
+            fullItemValue: `${PPNDirectionSymbol}${formattedFullValue} ${event.asset}`,
+            itemValue: `${PPNDirectionSymbol}${formattedValue} ${event.asset}`,
             valueColor: 'text',
           };
         } else if (isPPNView) {
@@ -339,15 +367,17 @@ export class ActivityFeedItem extends React.Component<Props> {
             label: 'Top Up',
             subtext: `from ${NAMES.SMART_WALLET}`,
             itemImageSource: PPNIcon,
-            itemValue: `+ ${formattedValue} ${event.asset}`,
+            fullItemValue: `${PPNDirectionSymbol}${formattedFullValue} ${event.asset}`,
+            itemValue: `${PPNDirectionSymbol}${formattedValue} ${event.asset}`,
             valueColor: 'positive',
           };
         } else if (event.smartWalletEvent) {
           data = {
             label: NAMES.SMART_WALLET,
-            subtext: 'To Pillar Network',
+            subtext: 'to Pillar Network',
             itemImageSource: smartWalletIcon,
-            itemValue: `- ${formattedValue} ${event.asset}`,
+            fullItemValue: `${PPNDirectionSymbol}${formattedFullValue} ${event.asset}`,
+            itemValue: `${PPNDirectionSymbol}${formattedValue} ${event.asset}`,
             valueColor: 'text',
           };
         } else {
@@ -355,7 +385,8 @@ export class ActivityFeedItem extends React.Component<Props> {
             label: NAMES.PPN_NETWORK,
             subtext: 'Top up',
             itemImageSource: PPNIcon,
-            itemValue: `+ ${formattedValue} ${event.asset}`,
+            fullItemValue: `${PPNDirectionSymbol}${formattedFullValue} ${event.asset}`,
+            itemValue: `${PPNDirectionSymbol}${formattedValue} ${event.asset}`,
             valueColor: 'positive',
           };
         }
@@ -369,7 +400,8 @@ export class ActivityFeedItem extends React.Component<Props> {
         break;
       case PAYMENT_NETWORK_ACCOUNT_WITHDRAWAL:
         data = {
-          itemValue: `- ${formattedValue} ${event.asset}`,
+          fullItemValue: `${PPNDirectionSymbol}${formattedFullValue} ${event.asset}`,
+          itemValue: `${PPNDirectionSymbol}${formattedValue} ${event.asset}`,
           valueColor: 'text',
         };
         if (isPPNView) {
@@ -386,23 +418,26 @@ export class ActivityFeedItem extends React.Component<Props> {
       case PAYMENT_NETWORK_TX_SETTLEMENT:
         const transactionsCount = event.extra.length;
         const formattedValuesArray = this.getFormattedSettleValues();
+        const valueSymbol = isFailed ? '' : '- ';
         data = {
           label: 'Settle',
           itemImageSource: PPNIcon,
           subtext: 'to Smart Wallet',
+          customAddonAlignLeft: true,
+          rightColumnInnerStyle: { flexDirection: 'row', alignItems: 'center' },
           customAddon: (
             <ListWrapper>
               {formattedValuesArray.map(({ formatted, symbol }) => (
                 <TankAssetBalance
                   key={symbol}
-                  amount={`- ${formatted} ${symbol}`}
-                  monoColor
+                  amount={`${valueSymbol}${formatted} ${symbol}`}
+                  secondary={isFailed}
                 />
               ))}
-              {isPPNView && transactionsCount > 1 && (
+              {!isFailed && isPPNView && transactionsCount > 1 && (
                 <BaseText regular secondary>Total {transactionsCount}</BaseText>
               )}
-              {!isPPNView && formattedValuesArray.map(({ formatted, symbol }) =>
+              {!isFailed && !isPPNView && formattedValuesArray.map(({ formatted, symbol }) =>
                 <ItemValue key={symbol}>{`+ ${formatted} ${symbol}`}</ItemValue>,
               )}
             </ListWrapper>),
@@ -413,6 +448,22 @@ export class ActivityFeedItem extends React.Component<Props> {
           label: NAMES.SMART_WALLET,
           itemImageSource: smartWalletIcon,
           subtext: 'Enable transaction fees with PLR',
+        };
+        break;
+      case SMART_WALLET_ACCOUNT_DEVICE_ADDED:
+        data = {
+          label: NAMES.SMART_WALLET,
+          itemImageSource: roundedPhoneIcon,
+          subtext: 'New account device added',
+          actionLabel: 'Added',
+        };
+        break;
+      case SMART_WALLET_ACCOUNT_DEVICE_REMOVED:
+        data = {
+          label: NAMES.SMART_WALLET,
+          itemImageSource: roundedPhoneIcon,
+          subtext: 'Account device removed',
+          actionLabel: 'Removed',
         };
         break;
       default:
@@ -434,6 +485,7 @@ export class ActivityFeedItem extends React.Component<Props> {
               subtext: isAssetView ? `to ${smartWallet}` : 'from Pillar Network',
               itemImageSource: isAssetView ? PPNIcon : smartWalletIcon,
               isReceived: true,
+              fullItemValue: `+ ${formattedFullValue} ${event.asset}`,
               itemValue: `+ ${formattedValue} ${event.asset}`,
               valueColor: 'positive',
             };
@@ -442,20 +494,21 @@ export class ActivityFeedItem extends React.Component<Props> {
               label: usernameOrAddress,
               avatarUrl,
               isReceived,
+              username: contact?.username,
             };
 
             if (event.extra) {
               const { syntheticTransaction: { toAmount, toAssetCode } } = event.extra;
               data.customAddon = (
                 <ListWrapper>
-                  <TankAssetBalance amount={`${directionSymbol} ${toAmount} ${toAssetCode}`} />
+                  <TankAssetBalance amount={`${directionSymbol}${toAmount} ${toAssetCode}`} />
                   {!isReceived && <BaseText regular secondary>{formattedValue} {event.asset}</BaseText>}
                 </ListWrapper>
               );
             } else {
               data.customAddon = (
                 <ListWrapper>
-                  <TankAssetBalance amount={`${directionSymbol} ${formattedValue} ${event.asset}`} />
+                  <TankAssetBalance amount={`${directionSymbol}${formattedValue} ${event.asset}`} />
                 </ListWrapper>
               );
             }
@@ -525,14 +578,21 @@ export class ActivityFeedItem extends React.Component<Props> {
             label: itemLabel,
             subtext,
             avatarUrl,
-            itemValue: `${directionSymbol} ${formattedValue} ${event.asset}`,
-            valueColor: isReceived && formattedValue !== '0' ? 'positive' : 'text',
+            username: contact?.username,
+            fullItemValue: `${directionSymbol}${formattedFullValue} ${event.asset}`,
+            itemValue: `${directionSymbol}${formattedValue} ${event.asset}`,
+            valueColor: isReceived && !this.isZeroValue(value) ? 'positive' : 'text',
             ...additionalInfo,
             isReceived,
           };
         }
     }
     data.itemStatusIcon = isPending ? TX_PENDING_STATUS : '';
+    if (isFailed) {
+      data.itemStatusIcon = TX_FAILED_STATUS;
+      data.statusIconColor = this.getColor('negative');
+      data.isFailed = true;
+    }
     return data;
   };
 
@@ -602,6 +662,7 @@ export class ActivityFeedItem extends React.Component<Props> {
       label: username,
       actionLabel,
       avatarUrl: profileImage,
+      username,
     };
 
     if (type === TYPE_SENT) {
@@ -654,6 +715,7 @@ export class ActivityFeedItem extends React.Component<Props> {
       iconColor,
       valueColor,
       iconBackgroundColor,
+      isFailed,
     } = itemData;
 
     return (
@@ -664,7 +726,7 @@ export class ActivityFeedItem extends React.Component<Props> {
         iconColor={this.getColor(iconColor)}
         diameter={48}
         iconBackgroundColor={this.getColor(iconBackgroundColor)}
-        valueColor={this.getColor(valueColor)}
+        valueColor={isFailed ? this.getColor('secondaryText') : this.getColor(valueColor)}
       />
     );
   }

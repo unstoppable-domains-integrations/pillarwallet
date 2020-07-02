@@ -62,7 +62,8 @@ type Props = {
   itemStatusIcon?: string,
   valueColor?: ?string,
   buttonActionLabel?: string,
-  labelAsButton?: boolean,
+  actionLabelAsButton?: boolean,
+  customLabel?: React.Node,
   buttonAction?: Function,
   secondaryButton?: boolean,
   actionLabel?: ?string,
@@ -97,6 +98,9 @@ type Props = {
   iconBorder?: boolean,
   address?: string,
   collectibleUrl?: string,
+  iconImageResizeMode?: string,
+  iconImageSize?: number,
+  statusIconColor?: string,
 }
 
 type AddonProps = {
@@ -105,7 +109,7 @@ type AddonProps = {
   itemStatusIcon?: string,
   valueColor?: ?string,
   buttonActionLabel?: string,
-  labelAsButton?: boolean,
+  actionLabelAsButton?: boolean,
   buttonAction?: () => void,
   secondaryButton?: boolean,
   actionLabel?: ?string,
@@ -114,6 +118,7 @@ type AddonProps = {
   acceptInvitation?: ?() => void,
   balance?: Object,
   colors: ThemeColors,
+  statusIconColor?: string,
 };
 
 type ImageWrapperProps = {
@@ -122,7 +127,6 @@ type ImageWrapperProps = {
   imageDiameter?: number,
   imageWrapperStyle?: Object,
 };
-
 
 const ItemWrapper = styled.View`
   flex-direction: column;
@@ -192,9 +196,10 @@ const IconCircle = styled.View`
   align-items: center;
   justify-content: center;
   text-align: center;
-  ${({ border, theme }) => border &&
-    `border-color: ${theme.colors.border};
-    border-width: 1px;`};
+  ${({ border, theme }) => border && `
+    border-color: ${theme.colors.border};
+    border-width: 1px;
+  `};
   overflow: hidden;
 `;
 
@@ -204,8 +209,10 @@ const ItemIcon = styled(Icon)`
 `;
 
 const IconImage = styled(CachedImage)`
-  width: 24px;
-  height: 24px;
+  ${({ size }) => `
+    height: ${size || 24}px;
+    width: ${size || 24}px;
+  `}
 `;
 
 const TokenImage = styled(CachedImage)`
@@ -269,7 +276,7 @@ const BalanceFiatValue = styled(BaseText)`
 
 const ItemValueStatus = styled(Icon)`
   margin-left: 12px;
-  color: ${themedColors.secondaryText};
+  color: ${({ iconColor }) => iconColor || themedColors.secondaryText};
   ${fontStyles.big};
 `;
 
@@ -314,7 +321,6 @@ const ImageAddonHolder = styled.View`
   top: 0;
   right: 10px;
 `;
-
 
 const ImageWrapper = (props: ImageWrapperProps) => {
   const {
@@ -369,6 +375,8 @@ const ItemImage = (props: Props) => {
     iconBackgroundColor,
     iconBorder,
     collectibleUrl,
+    iconImageResizeMode,
+    iconImageSize,
   } = props;
 
   let { fallbackSource } = props;
@@ -385,7 +393,11 @@ const ItemImage = (props: Props) => {
   if (iconSource) {
     return (
       <IconCircle diameter={diameter} backgroundColor={iconBackgroundColor} border={iconBorder}>
-        <IconImage source={iconSource} />
+        <IconImage
+          source={iconSource}
+          size={iconImageSize}
+          resizeMode={iconImageResizeMode}
+        />
       </IconCircle>
     );
   }
@@ -476,9 +488,10 @@ const Addon = (props: AddonProps) => {
     unreadCount,
     itemValue,
     itemStatusIcon,
+    statusIconColor,
     valueColor,
     buttonActionLabel,
-    labelAsButton,
+    actionLabelAsButton,
     buttonAction,
     secondaryButton,
     actionLabel,
@@ -496,15 +509,15 @@ const Addon = (props: AddonProps) => {
             {itemValue}
           </ItemValue>
         }
-        {!!itemStatusIcon && <ItemValueStatus name={itemStatusIcon} />}
+        {!!itemStatusIcon && <ItemValueStatus name={itemStatusIcon} iconColor={statusIconColor} />}
       </Wrapper>
     );
   }
 
   if (actionLabel) {
     return (
-      <ActionLabel button={labelAsButton}>
-        <ActionLabelText button={labelAsButton} color={labelAsButton ? colors.primary : actionLabelColor}>
+      <ActionLabel button={actionLabelAsButton}>
+        <ActionLabelText button={actionLabelAsButton} color={actionLabelAsButton ? colors.primary : actionLabelColor}>
           {actionLabel}
         </ActionLabelText>
       </ActionLabel>
@@ -575,7 +588,6 @@ const Addon = (props: AddonProps) => {
             {!!tokenBalance.toString() && <BalanceValue>{`${roundedBalance} ${token}`}</BalanceValue>}
             {!!syntheticBalance.toString() &&
             <TankAssetBalance
-              monoColor
               amount={syntheticBalance}
               token={token}
             />}
@@ -632,6 +644,7 @@ class ListItemWithImage extends React.Component<Props, {}> {
       imageWrapperStyle,
       theme,
       badge,
+      customLabel,
     } = this.props;
 
     const type = getType(this.props);
@@ -647,9 +660,10 @@ class ListItemWithImage extends React.Component<Props, {}> {
           <View style={{ flex: 1 }}>
             <InfoWrapper type={type} horizontalAlign={innerWrapperHorizontalAlign}>
               <Column type={type} style={{ flexGrow: 1 }}>
-                {!!label &&
+                {(!!label || !!customLabel) &&
                 <Row>
-                  <ItemTitle numberOfLines={2} ellipsizeMode="tail" type={type}>{label}</ItemTitle>
+                  {!!customLabel && customLabel}
+                  {!!label && <ItemTitle numberOfLines={2} ellipsizeMode="tail" type={type}>{label}</ItemTitle>}
                   {(type === CHAT_ITEM && !!timeSent) &&
                   <TimeWrapper>
                     <TimeSent>{timeSent}</TimeSent>
