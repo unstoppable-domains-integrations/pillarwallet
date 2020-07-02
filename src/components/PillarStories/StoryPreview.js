@@ -31,6 +31,7 @@ type CardProps = {
   backgroundColor?: string,
   title?: string,
   titleColor: string,
+  seen: boolean,
 };
 
 type Props = CardProps & {
@@ -45,7 +46,6 @@ const Wrapper = styled.View`
   margin: 0 6px;
   border-radius: 10px;
   overflow: hidden;
-  ${({ seen }) => !!seen && 'opacity: 0.5;'} 
 `;
 
 const StoryTouchable = styled.TouchableOpacity`
@@ -70,6 +70,7 @@ const ContentHolder = styled.View`
   flex: 1;
   position: relative;
   width: 100%;
+  ${({ seen }) => !!seen && 'background-color: rgba(0,0,0,0.6)'} 
 `;
 
 const StyledLinearGradient = styled(LinearGradient)`
@@ -104,11 +105,12 @@ const StoryCard = (props: CardProps) => {
     backgroundColor,
     title,
     titleColor,
+    seen,
   } = props;
 
   return (
     <StoryContentWrapper backgroundColor={backgroundColor} image={image}>
-      <ContentHolder>
+      <ContentHolder seen={seen}>
         {!!title &&
         <>
           <StyledLinearGradient
@@ -136,14 +138,13 @@ const StoryPreview = (props: Props) => {
     onPress,
     animated,
     style,
-    seen,
   } = props;
 
   const isDisabled = !onPress;
 
   return (
     <StoryTouchable onPress={onPress} animated={animated} disabled={isDisabled}>
-      <AnimatedWrapper style={style} seen={seen}>
+      <AnimatedWrapper style={style}>
         <StoryCard {...props} />
       </AnimatedWrapper>
     </StoryTouchable>
