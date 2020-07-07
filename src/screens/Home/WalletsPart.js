@@ -31,12 +31,9 @@ import PillarStories from 'components/PillarStories';
 // constants
 import { defaultFiatCurrency } from 'constants/assetsConstants';
 import { ACCOUNT_TYPES } from 'constants/accountsConstants';
-import { BLOCKCHAIN_NETWORK_TYPES } from 'constants/blockchainNetworkConstants';
 
 // actions
 import { switchAccountAction } from 'actions/accountsActions';
-import { refreshBitcoinBalanceAction } from 'actions/bitcoinActions';
-import { setActiveBlockchainNetworkAction } from 'actions/blockchainNetworkActions';
 import { toggleBalanceAction } from 'actions/appSettingsActions';
 
 // utils
@@ -60,8 +57,6 @@ type Props = {
   switchAccount: (accountId: string) => void,
   activeWallet: Account,
   availableWallets: Account[],
-  setActiveBlockchainNetwork: (id: string) => void,
-  refreshBitcoinBalance: () => void,
   hideBalance: boolean,
   toggleBalance: () => void,
   handleWalletChange: (message: string) => void,
@@ -100,8 +95,6 @@ class WalletsPart extends React.Component<Props, State> {
   changeAcc = (nextWallet: Account, callback?: () => void, noFullScreenLoader?: boolean) => {
     const {
       switchAccount,
-      setActiveBlockchainNetwork,
-      refreshBitcoinBalance,
       handleWalletChange,
     } = this.props;
 
@@ -116,11 +109,6 @@ class WalletsPart extends React.Component<Props, State> {
       case ACCOUNT_TYPES.SMART_WALLET:
       case ACCOUNT_TYPES.KEY_BASED:
         switchAccount(id);
-        if (callback) callback();
-        break;
-      case BLOCKCHAIN_NETWORK_TYPES.BITCOIN:
-        setActiveBlockchainNetwork(BLOCKCHAIN_NETWORK_TYPES.BITCOIN);
-        refreshBitcoinBalance();
         if (callback) callback();
         break;
       default:
@@ -178,8 +166,6 @@ const combinedMapStateToProps = (state: RootReducerState): $Shape<Props> => ({
 
 const mapDispatchToProps = (dispatch: Dispatch): $Shape<Props> => ({
   switchAccount: (accountId: string) => dispatch(switchAccountAction(accountId)),
-  setActiveBlockchainNetwork: (id: string) => dispatch(setActiveBlockchainNetworkAction(id)),
-  refreshBitcoinBalance: () => dispatch(refreshBitcoinBalanceAction(false)),
   toggleBalance: () => dispatch(toggleBalanceAction()),
 });
 

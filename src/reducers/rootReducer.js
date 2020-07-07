@@ -64,6 +64,8 @@ import phoneContactsReducer from './phoneContactsReducer';
 import storiesReducer from './storiesReducer';
 import connectedDevicesReducer from './connectedDevicesReducer';
 import recoveryPortalReducer from './recoveryPortalReducer';
+import lendingReducer from './lendingReducer';
+import poolTogetherReducer from './poolTogetherReducer';
 
 // types
 import type { OfflineQueueReducerState } from './offlineQueueReducer';
@@ -107,6 +109,8 @@ import type { PhoneContactsReducerAction, PhoneContactsReducerState } from './ph
 import type { StoriesReducerAction, StoriesReducerState } from './storiesReducer';
 import type { ConnectedDevicesReducerAction, ConnectedDevicesReducerState } from './connectedDevicesReducer';
 import type { RecoveryPortalReducerAction, RecoveryPortalReducerState } from './recoveryPortalReducer';
+import type { LendingReducerAction, LendingReducerState } from './lendingReducer';
+import type { PoolTogetherReducerState } from './poolTogetherReducer';
 
 export type RootReducerState = {|
   offlineQueue: OfflineQueueReducerState,
@@ -147,6 +151,8 @@ export type RootReducerState = {|
   stories: StoriesReducerState,
   connectedDevices: ConnectedDevicesReducerState,
   recoveryPortal: RecoveryPortalReducerState,
+  lending: LendingReducerState,
+  poolTogether: PoolTogetherReducerState,
 |};
 
 type RootReducerAction =
@@ -176,7 +182,8 @@ type RootReducerAction =
   | PhoneContactsReducerAction
   | StoriesReducerAction
   | ConnectedDevicesReducerAction
-  | RecoveryPortalReducerAction;
+  | RecoveryPortalReducerAction
+  | LendingReducerAction;
 
 export type GetState = () => RootReducerState;
 export type ThunkAction = (
@@ -227,6 +234,8 @@ const appReducer = combineReducers({
   stories: storiesReducer,
   connectedDevices: connectedDevicesReducer,
   recoveryPortal: recoveryPortalReducer,
+  lending: lendingReducer,
+  poolTogether: poolTogetherReducer,
 });
 
 export const initialState = appReducer(undefined, {});
