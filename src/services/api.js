@@ -846,6 +846,14 @@ class SDKWrapper {
       })
       .catch(() => []);
   }
+
+
+  fetchStories(walletId: string) {
+    return Promise.resolve()
+      .then(() => this.pillarWalletSdk.story.list({ walletId }))
+      .then(({ data }) => data)
+      .catch(() => []);
+  }
 }
 
 export default SDKWrapper;

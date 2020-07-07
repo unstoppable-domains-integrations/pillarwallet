@@ -106,7 +106,8 @@ import RecoveryPortalWalletRecoveryPendingScreen from 'screens/RecoveryPortal/Re
 import RecoveryPortalWalletRecoveryStartedSceeen from 'screens/RecoveryPortal/RecoveryPortalWalletRecoveryStarted';
 import EmailPhoneMissingScreen from 'screens/ReferFriends/EmailPhoneMissing';
 import ReferralIncomingRewardScreen from 'screens/ReferFriends/ReferralIncomingReward';
-import StoryFrameScreen from 'screens/StoryFrame';
+// import StoryFrameScreen from 'screens/StoryFrame';
+import StoriesScreen from 'screens/StoryFrame/StoriesView';
 
 // components
 import RetryApiRegistration from 'components/RetryApiRegistration';
@@ -681,7 +682,8 @@ tankWithdrawalFlow.navigationOptions = hideTabNavigatorOnChildView;
 // STORIES FLOW
 const storiesFlow = createStackNavigator(
   {
-    [STORY_FRAME]: StoryFrameScreen,
+    // [STORY_FRAME]: StoryFrameScreen,
+    [STORY_FRAME]: StoriesScreen,
   },
   StackNavigatorConfig,
 );

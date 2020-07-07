@@ -18,32 +18,35 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-import type { Dispatch, GetState } from 'reducers/rootReducer';
 import { SET_STORIES, SET_SEEN_STORIES, SET_STORY_AS_SEEN } from 'constants/storiesConstants';
+import type { Dispatch, GetState } from 'reducers/rootReducer';
 
 
 export const fetchStoriesAction = () => {
-  return (dispatch: Dispatch, getState: GetState) => {
+  return async (dispatch: Dispatch, getState: GetState) => {
     const {
       session: { data: { isOnline } },
       stories: { seenStories },
+      // user: { data: { walletId } },
     } = getState();
 
     if (!isOnline) return;
 
-    fetch('https://v2-api.sheety.co/68293db1d365e904bd3fd18233a5b8b7/navigationRoutes/stories')
+    // const stories = await api.fetchStories(walletId);
+
+
+    fetch('https://api.npoint.io/b99768fcf4f8260de906')
       .then(resp => resp.json())
       .then(data => {
-        const { stories } = data;
-        if (!stories) return;
+        if (!data) return;
 
         dispatch({
           type: SET_STORIES,
-          payload: stories,
+          payload: data,
         });
 
         // TODO: persist state;
-        const updatedSeenStories = seenStories.filter(storyId => stories.find(({ id }) => id === storyId));
+        const updatedSeenStories = seenStories.filter(storyId => data.find(({ id }) => id === storyId));
 
         dispatch({
           type: SET_SEEN_STORIES,

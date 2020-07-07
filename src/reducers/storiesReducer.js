@@ -1,6 +1,18 @@
 // @flow
 import { SET_STORIES, SET_STORY_AS_SEEN, SET_SEEN_STORIES } from 'constants/storiesConstants';
 
+export type StoryPage = {
+  image: string,
+  storyHeight: number,
+  backgroundColor: string,
+  labelBackgroundColor: string,
+  labelColor: string,
+  label: string,
+  title: string,
+  titleColor: string,
+  body: string,
+}
+
 export type Story = {
   id: string,
   title: string,
@@ -9,6 +21,7 @@ export type Story = {
   imageLarge: string,
   gradientColor: string,
   expirationDate?: number, // TODO: remove no longer valid stories?
+  pages: StoryPage[],
 }
 
 export type SeenStories = string[];

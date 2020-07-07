@@ -147,6 +147,7 @@ class PillarStories extends React.Component<Props> {
     //   outputRange: [0, -8],
     // });
 
+
     return (
       <StoriesHolder>
         <FlatList
