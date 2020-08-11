@@ -18,6 +18,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 import branchIo from 'react-native-branch';
+import * as Sentry from '@sentry/react-native';
 import set from 'lodash.set';
 import { Appearance } from 'react-native-appearance';
 
@@ -37,7 +38,7 @@ import { firebaseAnalytics } from 'services/firebase';
 
 // utils
 import { setKeychainDataObject } from 'utils/keychain';
-import { delay } from 'utils/common';
+import { delay, reportLog } from 'utils/common';
 
 // types
 import type { Dispatch, GetState } from 'reducers/rootReducer';
@@ -133,7 +134,13 @@ export const changeUseBiometricsAction = (value: boolean, data: KeyChainData, no
           type: 'success',
           title: 'Success',
         }))
-        .catch(() => null);
+        .catch(e => {
+          reportLog(
+            'Could not delay toast display',
+            e, Sentry.Severity.Error);
+
+          return null;
+        });
     }
   };
 };

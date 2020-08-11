@@ -17,10 +17,15 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+import * as Sentry from '@sentry/react-native';
 import Storage from 'services/storage';
 import { UPDATE_DB } from 'constants/dbConstants';
 
+// Models
 import type { DbAction } from 'models/DbAction';
+
+// Utilities
+import { reportLog } from '../utils/common';
 
 const storage = Storage.getInstance('db');
 
@@ -34,6 +39,10 @@ export const saveDbAction = (
   callback: (next: () => void) => {
     storage.save(key, data, forceRewrite)
       .then(() => next()) // eslint-disable-line
-      .catch(() => {});
+      .catch(e => reportLog(
+        'An issue occured whilst trying to save data to local storage',
+        e,
+        Sentry.Severity.Error,
+      ));
   },
 });

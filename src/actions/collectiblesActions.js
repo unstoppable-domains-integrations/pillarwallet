@@ -19,6 +19,7 @@
 */
 
 import { COLLECTIBLES_NETWORK } from 'react-native-dotenv';
+import * as Sentry from '@sentry/react-native';
 import { COLLECTIBLES } from 'constants/assetsConstants';
 import {
   UPDATE_COLLECTIBLES,
@@ -40,6 +41,7 @@ import type { GetState, Dispatch } from 'reducers/rootReducer';
 import type { Account } from 'models/Account';
 
 import { saveDbAction } from './dbActions';
+import { reportLog } from '../utils/common';
 
 const parseCollectibleMedia = (data) => {
   const {
@@ -214,7 +216,14 @@ export const fetchAllAccountsCollectiblesAction = () => {
     const promises = accounts.map(async account => {
       await dispatch(fetchCollectiblesAction(account));
     });
-    await Promise.all(promises).catch(_ => _);
+    await Promise.all(promises).catch(e => {
+      reportLog(
+        'An error occured whilst executing promises to get all collectibles',
+        e,
+        Sentry.Severity.Error);
+
+      return e;
+    });
   };
 };
 
@@ -228,7 +237,14 @@ export const fetchAllAccountsCollectiblesHistoryAction = () => {
     const promises = accounts.map(async account => {
       await dispatch(fetchCollectiblesHistoryAction(account));
     });
-    await Promise.all(promises).catch(_ => _);
+    await Promise.all(promises).catch(e => {
+      reportLog(
+        'An error occured whilst executing promises to get all collectible history',
+        e,
+        Sentry.Severity.Error);
+
+      return e;
+    });
   };
 };
 

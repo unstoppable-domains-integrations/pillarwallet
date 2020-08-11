@@ -61,6 +61,7 @@ import Button from 'components/Button';
 // utils
 import { getThemeByType, defaultTheme } from 'utils/themes';
 import { log } from 'utils/logger';
+import { reportLog } from 'utils/common';
 
 // services
 import { setTopLevelNavigator } from 'services/navigation';
@@ -173,7 +174,13 @@ class App extends React.Component<Props, *> {
     // hold the UI and wait until network status finished for later app connectivity checks
     await NetInfo.fetch()
       .then((netInfoState) => this.setOnlineStatus(netInfoState.isInternetReachable))
-      .catch(() => null);
+      .catch(e => {
+        reportLog(
+          'NetInfo: An error occured whilst trying to fetch the state of the network',
+          e, Sentry.Severity.Error);
+
+        return null;
+      });
     this.removeNetInfoEventListener = NetInfo.addEventListener(this.handleConnectivityChange);
     startReferralsListener();
     fetchAppSettingsAndRedirect();
