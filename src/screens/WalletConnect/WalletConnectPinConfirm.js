@@ -90,6 +90,11 @@ class WalletConnectPinConfirmScreeen extends React.Component<Props, State> {
         callback = () => this.handleSignTransaction(request, wallet);
         break;
       case 'eth_sign':
+      case 'eth_signTypedData':
+      case 'eth_signTypedData_v1':
+      case 'eth_signTypedData_v2':
+      case 'eth_signTypedData_v3':
+      case 'eth_signTypedData_v4':
       case 'personal_sign':
         callback = () => this.handleSignMessage(request, wallet);
         break;

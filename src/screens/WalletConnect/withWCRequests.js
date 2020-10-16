@@ -141,6 +141,11 @@ export default function withWCRequests(WrappedComponent: React.ComponentType<*>)
           break;
 
         case 'eth_sign':
+        case 'eth_signTypedData':
+        case 'eth_signTypedData_v1':
+        case 'eth_signTypedData_v2':
+        case 'eth_signTypedData_v3':
+        case 'eth_signTypedData_v4':
         case 'personal_sign':
           navigation.navigate(WALLETCONNECT_PIN_CONFIRM_SCREEN, {
             callId: request.callId,

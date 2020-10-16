@@ -331,6 +331,11 @@ class WalletConnectCallRequestScreen extends React.Component<Props, State> {
         );
         break;
       case 'eth_sign':
+      case 'eth_signTypedData':
+      case 'eth_signTypedData_v1':
+      case 'eth_signTypedData_v2':
+      case 'eth_signTypedData_v3':
+      case 'eth_signTypedData_v4':
         type = REQUEST_TYPE.MESSAGE;
 
         address = params[0]; // eslint-disable-line

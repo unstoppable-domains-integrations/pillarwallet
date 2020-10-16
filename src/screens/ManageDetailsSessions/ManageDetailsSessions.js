@@ -87,7 +87,9 @@ class ManageDetailsSessions extends React.Component<Props, State> {
       case 'eth_sign':
       case 'eth_signTypedData':
       case 'eth_signTypedData_v1':
+      case 'eth_signTypedData_v2':
       case 'eth_signTypedData_v3':
+      case 'eth_signTypedData_v4':
       case 'personal_sign':
         label = t('walletConnectContent.title.requestType.message');
         break;
