@@ -43,6 +43,7 @@ import {
   POOLTOGETHER_DASHBOARD,
   SABLIER_STREAMS,
   SENDWYRE_INPUT,
+  OCEAN_MARKET,
 } from 'constants/navigationConstants';
 import { REMOTE_CONFIG } from 'constants/remoteConfigConstants';
 
@@ -85,6 +86,7 @@ let isWyreEnabled = true;
 let isRampEnabled = true;
 let isSablierEnabled = true;
 let isAltalixEnabled = true;
+let isOceanMarketEnabled = true;
 
 type Props = {
   theme: Theme,
@@ -115,6 +117,7 @@ class ServicesScreen extends React.Component<Props> {
     isRampEnabled = firebaseRemoteConfig.getBoolean(REMOTE_CONFIG.FEATURE_RAMP);
     isSablierEnabled = firebaseRemoteConfig.getBoolean(REMOTE_CONFIG.FEATURE_SABLIER);
     isAltalixEnabled = firebaseRemoteConfig.getBoolean(REMOTE_CONFIG.FEATURE_ALTALIX);
+    isOceanMarketEnabled = firebaseRemoteConfig.getBoolean(REMOTE_CONFIG.FEATURE_OCEAN_MARKET);
 
     if (isAltalixAvailable === null) loadAltalixInfo();
   }
@@ -189,6 +192,16 @@ class ServicesScreen extends React.Component<Props> {
         label: t('servicesContent.label.soon'),
       });
     }
+
+    if (isOceanMarketEnabled) {
+      services.push({
+        key: 'oceanMarket',
+        title: t('servicesContent.oceanMarket.title'),
+        body: t('servicesContent.oceanMarket.description'),
+        action: () => navigation.navigate(OCEAN_MARKET),
+      });
+    }
+
     return services;
   };
 

@@ -34,3 +34,9 @@ YellowBox.ignoreWarnings([
 import '@ethersproject/shims';
 import 'utils/shim';
 import 'crypto';
+
+// shim for ocean protocol
+class _HTMLAnchorElement {};
+global.HTMLAnchorElement = _HTMLAnchorElement;
+
+

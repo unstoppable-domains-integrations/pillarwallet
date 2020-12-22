@@ -23,7 +23,7 @@ import { getEnv } from 'configs/envConfig';
 import isEmpty from 'lodash.isempty';
 
 // constants
-import { ETH, HOT, HOLO, supportedFiatCurrencies } from 'constants/assetsConstants';
+import { ETH, HOT, HOLO, supportedFiatCurrencies, OCEAN } from 'constants/assetsConstants';
 import { ERROR_TYPE } from 'constants/transactionsConstants';
 import { REMOTE_CONFIG } from 'constants/remoteConfigConstants';
 
@@ -372,19 +372,29 @@ export function getLegacyExchangeRates(assets: string[]): Promise<?Object> {
 }
 
 export async function getExchangeRates(assets: Assets): Promise<?Object> {
-  const assetSymbols = Object.keys(assets);
-
-  if (isEmpty(assetSymbols)) {
-    reportLog('getExchangeRates received empty assetSymbols array', { assetSymbols });
+  if (isEmpty(Object.keys(assets))) {
+    reportLog('getExchangeRates received empty assetSymbols array', { assetSymbols: Object.keys(assets) });
     return null;
+  }
+
+  const crucialAssets = {};
+  const isOceanMarketEnabled = firebaseRemoteConfig.getBoolean(REMOTE_CONFIG.FEATURE_OCEAN_MARKET);
+  if (isOceanMarketEnabled) {
+    crucialAssets[OCEAN] = {
+      symbol: OCEAN,
+      address: getEnv().OCEAN_ADDRESS,
+    };
   }
 
   // CryptoCompare is legacy price oracle, however, the change to new one is feature flagged
   const useLegacyCryptoCompare = firebaseRemoteConfig.getBoolean(REMOTE_CONFIG.USE_LEGACY_CRYPTOCOMPARE_TOKEN_PRICES);
 
+  const assetsForRates = { ...assets, ...crucialAssets };
+  const assetSymbols = Object.keys(assetsForRates);
+
   let rates = useLegacyCryptoCompare
     ? await getLegacyExchangeRates(assetSymbols)
-    : await getCoinGeckoTokenPrices(assets);
+    : await getCoinGeckoTokenPrices(assetsForRates);
 
   if (!useLegacyCryptoCompare) {
     if (isEmpty(rates)) {

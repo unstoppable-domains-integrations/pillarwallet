@@ -66,6 +66,7 @@ import fiatToCryptoReducer from './fiatToCryptoReducer';
 import onboardingReducer from './onboardingReducer';
 import cacheReducer from './cacheReducer';
 import transactionEstimateReducer from './transactionEstimateReducer';
+import oceanMarketReducer from './oceanMarketReducer';
 
 // local types
 import type { OfflineQueueReducerState } from './offlineQueueReducer';
@@ -113,6 +114,7 @@ import type { FiatToCryptoReducerAction, FiatToCryptoReducerState } from './fiat
 import type { CacheAction, CacheReducerState } from './cacheReducer';
 import type { OnboardingReducerAction, OnboardingReducerState } from './onboardingReducer.js';
 import type { TransactionEstimateReducerAction, TransactionEstimateReducerState } from './transactionEstimateReducer';
+import type { OceanMarketReducerAction, OceanMarketReducerState } from './oceanMarketReducer';
 
 export type RootReducerState = {|
   offlineQueue: OfflineQueueReducerState,
@@ -154,6 +156,7 @@ export type RootReducerState = {|
   onboarding: OnboardingReducerState,
   cache: CacheReducerState,
   transactionEstimate: TransactionEstimateReducerState,
+  oceanMarket: OceanMarketReducerState,
 |};
 
 type RootReducerAction =
@@ -186,7 +189,8 @@ type RootReducerAction =
   | FiatToCryptoReducerAction
   | OnboardingReducerAction
   | CacheAction
-  | TransactionEstimateReducerAction;
+  | TransactionEstimateReducerAction
+  | OceanMarketReducerAction;
 
 export type GetState = () => RootReducerState;
 export type ThunkAction = (
@@ -238,6 +242,7 @@ const appReducer = combineReducers({
   onboarding: onboardingReducer,
   cache: cacheReducer,
   transactionEstimate: transactionEstimateReducer,
+  oceanMarket: oceanMarketReducer,
 });
 
 export const initialState = appReducer(undefined, {});

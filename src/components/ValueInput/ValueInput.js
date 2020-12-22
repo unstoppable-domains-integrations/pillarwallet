@@ -18,7 +18,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-import React, { useState } from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
 import { Keyboard } from 'react-native';
 import { createStructuredSelector } from 'reselect';
@@ -72,6 +72,8 @@ export type ExternalProps = {
   leftSideSymbol?: string,
   getInputRef?: (Input) => void,
   onFormValid?: (boolean) => void,
+  customHeader?: React.Node,
+  hideLeftAddon?: boolean,
 };
 
 type InnerProps = {
@@ -84,6 +86,8 @@ type InnerProps = {
 };
 
 type Props = InnerProps & ExternalProps;
+
+const { useState } = React;
 
 const CollectibleWrapper = styled.View`
   align-items: center;
@@ -132,6 +136,8 @@ export const ValueInputComponent = (props: Props) => {
     leftSideSymbol,
     getInputRef,
     onFormValid,
+    customHeader,
+    hideLeftAddon,
   } = props;
 
   const [valueInFiat, setValueInFiat] = useState<string>('');
@@ -194,6 +200,7 @@ export const ValueInputComponent = (props: Props) => {
   const assetsOptions = customAssets || assets;
 
   const openAssetSelector = () => {
+    if (assetsOptions.length <= 1) return;
     const optionTabs = showCollectibles
       ? [{
         name: t('label.tokens'),
@@ -221,6 +228,7 @@ export const ValueInputComponent = (props: Props) => {
   };
 
   const getCustomLabel = () => {
+    if (customHeader) return customHeader;
     return (
       <ValueInputHeader
         asset={assetData}
@@ -230,6 +238,13 @@ export const ValueInputComponent = (props: Props) => {
         disableAssetSelection={assetsOptions.length <= 1}
       />
     );
+  };
+
+  const getLeftSideText = () => {
+    if (hideLeftAddon) return null;
+    return displayFiatAmount
+      ? t('tokenValue', { value: formatAmount(value || '0', 2), token: assetSymbol || '' })
+      : formattedValueInFiat;
   };
 
   const inputProps = {
@@ -268,11 +283,8 @@ export const ValueInputComponent = (props: Props) => {
           inputProps={inputProps}
           numeric
           itemHolderStyle={{ borderRadius: 10 }}
-          onRightAddonPress={openAssetSelector}
-          leftSideText={displayFiatAmount
-            ? t('tokenValue', { value: formatAmount(value || '0', 2), token: assetSymbol || '' })
-            : formattedValueInFiat
-          }
+          onRightAddonPress={assetsOptions.length > 1 && openAssetSelector}
+          leftSideText={getLeftSideText()}
           onLeftSideTextPress={() => setDisplayFiatAmount(!displayFiatAmount)}
           rightPlaceholder={displayFiatAmount ? fiatCurrency : assetSymbol}
           leftSideSymbol={leftSideSymbol}

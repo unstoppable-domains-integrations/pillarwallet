@@ -17,21 +17,20 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-import styled from 'styled-components/native';
 
-export const Grid = styled.View`
-  flex: 1;
-  flex-direction: column;
-`;
+import { createSelector } from 'reselect';
 
-export const Row = styled.View`
-  flex-direction: row;
-  ${({ flex }) => flex && `flex: ${flex};`}
-  ${({ center }) => center && 'justify-content: center;'}
-  ${({ wrap }) => wrap && 'flex-wrap: wrap;'}
-`;
+import type { Rates } from 'models/Asset';
+import { getRate } from 'utils/assets';
+import { defaultFiatCurrency, OCEAN } from 'constants/assetsConstants';
+import { baseFiatCurrencySelector, ratesSelector } from './selectors';
 
-export const Column = styled.View`
-  flex-direction: column;
-  flex: ${props => props.size ? props.size : 1};
-`;
+
+export const oceanTokenRateSelector = createSelector(
+  ratesSelector,
+  baseFiatCurrencySelector,
+  (rates: Rates, baseFiatCurrency: ?string) => {
+    const fiatCurrency = baseFiatCurrency || defaultFiatCurrency;
+    return getRate(rates, OCEAN, fiatCurrency);
+  },
+);

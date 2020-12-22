@@ -23,7 +23,7 @@ import styled from 'styled-components/native';
 import { BigNumber } from 'bignumber.js';
 import t from 'translations/translate';
 import { themedColors } from 'utils/themes';
-import { fontStyles } from 'utils/variables';
+import { fontStyles, spacing } from 'utils/variables';
 import { formatUnits } from 'utils/common';
 import { BaseText, MediumText } from 'components/Typography';
 import { Spacing } from 'components/Layout';
@@ -33,6 +33,7 @@ import type { GasToken } from 'models/Transaction';
 import TableAmount from './TableAmount';
 
 export { default as TableAmount } from './TableAmount';
+export { default as TableTokenAndAmount } from './TableTokenAndAmount';
 
 
 type Props = {
@@ -60,6 +61,9 @@ export const TableRow = styled.View`
 export const TableLabel = styled(BaseText)`
   ${fontStyles.regular};
   color: ${themedColors.secondaryText};
+  padding-right: ${spacing.small}px;
+  flex: 1;
+  flex-wrap: wrap;
 `;
 
 export const TableTotal = styled(MediumText)`

@@ -288,7 +288,11 @@
     "proceed": "Proceed",
     "readMore": "Read more",
     "activateSmartWallet": "Activate Smart Wallet",
-    "finish": "Finish"
+    "finish": "Finish",
+    "buyDataset": "Buy dataset",
+    "addLiquidity": "Add liquidity",
+    "removeLiquidity": "Remove liquidity",
+    "buy": "Buy"
   },
 
   "paragraph": {
@@ -1194,6 +1198,10 @@
       "title": "Buy with Altalix",
       "description": "Buy Now"
     },
+    "oceanMarket": {
+      "title": "Ocean Market",
+      "description": "Find, publish and trade data sets in the ocean market"
+    },
     "label": {
       "requiresActivation": "Requires activation",
       "forSmartWallet": "For Smart Wallet",
@@ -1249,7 +1257,9 @@
       "pillarFee": "Pillar fee",
       "totalFee": "Total fee",
       "youAreSending": "You are sending",
-      "fees": "Fees"
+      "fees": "Fees",
+      "allowanceAndMaxEthFee": "Allowance + Max. Ethereum fee",
+      "maxTotalFee": "Max. total fee"
     },
     "paragraph": {
       "exchangeTransactionSuccess": "It may take some time for this transaction to complete",
@@ -1368,7 +1378,11 @@
     "cannotExchangeAsset": "Cannot exchange asset. Please try again.",
     "cannotSendAsset": "Cannot send asset. Please try again.",
     "cannotDepositAsset": "Cannot deposit asset. Please try again.",
-    "cannotWithdrawAsset": "Cannot withdraw asset. Please try again."
+    "cannotWithdrawAsset": "Cannot withdraw asset. Please try again.",
+    "cannotConnectToOcean": {
+      "noAccount": "Cannot connect to Ocean market - smart wallet wasn't found",
+      "default": "Cannot connect to Ocean market"
+    }
   },
 
   "exchangeContent": {
@@ -1428,6 +1442,39 @@
       "noOffers": {
         "title": "No live offers",
         "paragraph": "Currently no matching offers from exchange services are provided.\nNew offers may appear at any time — don’t miss it."
+      }
+    }
+  },
+
+  "oceanMarketContent": {
+    "title": {
+      "oceanMarketMain": "Ocean Market",
+      "addLiquidity": "Add liquidity",
+      "review": "Review",
+      "reviewReceive": "You will receive",
+      "reviewTokenAllocation": "Token allocation",
+      "reviewFees": "Fees",
+      "balance": "Balance",
+      "availableDatatasets": "Available datasets"
+    },
+    "label": {
+      "exchangeRate": "Exchange rate",
+      "shareOfPool": "Share of Pool",
+      "datasetPrice": "Dataset price",
+      "poolSharePercentage": "Pool share {{value}}%",
+      "poolShares": "Pool shares",
+      "available": "Available",
+      "liquidityReview": "You are adding liquidity"
+    },
+    "paragraph": {
+      "oceanTokenInfo": "The OCEAN utility token is used to stake on data, govern community funding, and buy & sell data. Its supply is disbursed over time to drive near-term growth and long-term sustainability."
+    },
+    "tabs": {
+      "buyAndUse": {
+        "title": "Buy and use"
+      },
+      "pool": {
+        "title": "Pool"
       }
     }
   },

@@ -47795,8 +47795,13 @@ exports[`Storyshots Table default 1`] = `
                 Array [
                   Object {
                     "color": "#8B939E",
+                    "flexBasis": 0,
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "flexWrap": "wrap",
                     "fontSize": 14,
                     "lineHeight": 22,
+                    "paddingRight": 8,
                   },
                   undefined,
                 ],
@@ -47879,8 +47884,13 @@ exports[`Storyshots Table default 1`] = `
                 Array [
                   Object {
                     "color": "#8B939E",
+                    "flexBasis": 0,
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "flexWrap": "wrap",
                     "fontSize": 14,
                     "lineHeight": 22,
+                    "paddingRight": 8,
                   },
                   undefined,
                 ],
@@ -47977,8 +47987,13 @@ exports[`Storyshots Table default 1`] = `
                 Array [
                   Object {
                     "color": "#8B939E",
+                    "flexBasis": 0,
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "flexWrap": "wrap",
                     "fontSize": 14,
                     "lineHeight": 22,
+                    "paddingRight": 8,
                   },
                   undefined,
                 ],
@@ -48045,8 +48060,13 @@ exports[`Storyshots Table default 1`] = `
                 Array [
                   Object {
                     "color": "#8B939E",
+                    "flexBasis": 0,
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "flexWrap": "wrap",
                     "fontSize": 14,
                     "lineHeight": 22,
+                    "paddingRight": 8,
                   },
                   undefined,
                 ],

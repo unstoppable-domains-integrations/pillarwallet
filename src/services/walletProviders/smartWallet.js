@@ -109,6 +109,7 @@ export default class SmartWalletProvider {
       usePPN,
       extra,
       gasToken,
+      sequentialSmartWalletTransactions = [],
     } = transaction;
     let { data, to: recipient } = transaction;
     const from = getAccountAddress(account);
@@ -151,6 +152,13 @@ export default class SmartWalletProvider {
 
     const transactionSpeed = this.mapTransactionSpeed(transaction.txSpeed);
 
+    const sequentialTransactions = sequentialSmartWalletTransactions.map((sequential) => ({
+      from,
+      recipient: sequential.to,
+      value: ethToWei(sequential.amount || 0),
+      data: sequential.data || '',
+    }));
+
     return smartWalletService
       .transferAsset({
         // $FlowFixMe
@@ -159,6 +167,7 @@ export default class SmartWalletProvider {
         data,
         transactionSpeed,
         gasToken,
+        sequentialTransactions,
       })
       .then(hash => ({
         from,

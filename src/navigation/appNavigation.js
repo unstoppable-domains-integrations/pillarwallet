@@ -24,7 +24,7 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 import type { NavigationScreenProp } from 'react-navigation';
 import BackgroundTimer from 'react-native-background-timer';
 import { connect } from 'react-redux';
-import { Animated, Easing, View, Image, AppState } from 'react-native';
+import { View, Image, AppState } from 'react-native';
 import { withTheme } from 'styled-components';
 import { withTranslation } from 'react-i18next';
 import t from 'translations/translate';
@@ -265,15 +265,15 @@ import {
   SABLIER_WITHDRAW_REVIEW,
   SENDWYRE_INPUT,
   EXCHANGE_FLOW,
+  OCEAN_MARKET_FLOW,
 } from 'constants/navigationConstants';
-import { DARK_THEME } from 'constants/appSettingsConstants';
-
 
 // utils
 import { fontSizes } from 'utils/variables';
 import { initWalletConnectSessions } from 'actions/walletConnectActions';
 import { modalTransition, addAppStateChangeListener, removeAppStateChangeListener } from 'utils/common';
-import { getColorByThemeOutsideStyled, getThemeByType, getThemeColors } from 'utils/themes';
+import { getColorByThemeOutsideStyled, getThemeColors } from 'utils/themes';
+
 
 // types
 import type { Theme } from 'models/Theme';
@@ -282,6 +282,11 @@ import type { User } from 'models/User';
 import type { Notification } from 'models/Notification';
 import type { EthereumWallet } from 'models/Wallet';
 import type { BackupStatus } from 'reducers/walletReducer';
+
+// stacks
+import oceanMarketFlow from './oceanMarketNavigation';
+
+import { hideTabNavigatorOnChildView, StackNavigatorConfig, StackNavigatorModalConfig } from './configs';
 
 
 const SLEEP_TIMEOUT = 20000;
@@ -293,40 +298,6 @@ const iconWallet = require('assets/icons/icon_wallet_outline.png');
 const iconServices = require('assets/icons/icon_services.png');
 const iconHome = require('assets/icons/icon_home_smrt.png');
 const iconConnect = require('assets/icons/icon_connect.png');
-
-const StackNavigatorModalConfig = {
-  transitionConfig: () => ({
-    transitionSpec: {
-      duration: 0,
-      timing: Animated.timing,
-      easing: Easing.step0,
-    },
-  }),
-  defaultNavigationOptions: {
-    header: null,
-  },
-};
-
-const StackNavigatorConfig = {
-  defaultNavigationOptions: {
-    header: null,
-    gesturesEnabled: true,
-  },
-  cardStyle: {
-    backgroundColor: {
-      dark: getThemeColors(getThemeByType(DARK_THEME)).basic070,
-      light: getThemeColors(getThemeByType()).basic070,
-    },
-  },
-};
-
-const hideTabNavigatorOnChildView = ({ navigation }) => {
-  const tabBarVisible = navigation.state.index < 1;
-  return {
-    tabBarVisible,
-    animationEnabled: true,
-  };
-};
 
 // ASSETS FLOW
 const assetsFlow = createStackNavigator(
@@ -373,7 +344,6 @@ const walletConnectFlow = createStackNavigator(
   StackNavigatorConfig,
 );
 walletConnectFlow.navigationOptions = hideTabNavigatorOnChildView;
-
 
 // HOME FLOW
 const homeFlow = createStackNavigator({
@@ -756,6 +726,7 @@ const AppFlowNavigation = createStackNavigator(
     [CONTACTS_FLOW]: contactsFlow,
     [SABLIER_FLOW]: sablierFlow,
     [EXCHANGE_FLOW]: exchangeFlow,
+    [OCEAN_MARKET_FLOW]: oceanMarketFlow,
   },
   modalTransition,
 );

@@ -98,13 +98,14 @@ const ValueInputHeader = (props: Props) => {
         <Image
           key={id}
           source={optionImageSource}
-          fallbackSource={genericToken}
+          fallbackSource={!(optionImageSource && typeof optionImageSource === 'number') && genericToken}
           resizeMode="contain"
-          style={{ height: 24, width: 24 }}
+          style={{ height: 24, width: 24, marginRight: disableAssetSelection ? 4 : 0 }}
         />
+        {!disableAssetSelection &&
         <ChevronWrapper>
           <SelectorChevron name="selector" />
-        </ChevronWrapper>
+        </ChevronWrapper>}
       </SideWrapper>
       <AssetName onPress={onAssetPress} numberOfLines={1}>{name}</AssetName>
       <Spacing w={8} />

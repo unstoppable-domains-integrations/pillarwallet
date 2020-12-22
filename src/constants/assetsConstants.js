@@ -17,6 +17,7 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+
 export const FETCHED = 'FETCHED';
 export const FETCHING = 'FETCHING';
 export const FETCHING_INITIAL = 'FETCHING_INITIAL';
@@ -71,6 +72,19 @@ export const defaultFiatCurrency = GBP;
 export const TOKENS = 'TOKENS';
 export const COLLECTIBLES = 'COLLECTIBLES';
 export const BADGES = 'BADGES';
+export const OCEAN_DATASET = 'OCEAN_DATASET';
+export const OCEAN = 'OCEAN';
+export const POOL_SHARES = 'POOL SHARES';
+export const OCEAN_PROTOCOL = 'Ocean Protocol';
+export const OCEAN_TOKEN = {
+  symbol: OCEAN,
+  name: 'Ocean Token',
+  decimals: 18,
+  description: '',
+  iconMonoUrl: '',
+  iconUrl: '',
+  wallpaperUrl: '',
+};
 
 export const SYNTHETIC = 'SYNTHETIC';
 export const NONSYNTHETIC = 'NONSYNTHETIC';
