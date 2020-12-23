@@ -36,13 +36,14 @@ import Input from 'components/Input';
 import { Spacing } from 'components/Layout';
 import Modal from 'components/Modal';
 
-import { formatAmount, isValidNumber } from 'utils/common';
-import { themedColors, getThemeColors } from 'utils/themes';
+import { formatAmount, isValidNumber, noop } from 'utils/common';
+import { getThemeColors } from 'utils/themes';
 import { images } from 'utils/images';
-import { calculateMaxAmount } from 'utils/assets';
+import { calculateMaxAmount, getFormattedBalanceInFiat, getBalanceInFiat } from 'utils/assets';
 
-import { COLLECTIBLES, TOKENS, defaultFiatCurrency } from 'constants/assetsConstants';
-import { getBalanceInFiat, getFormattedBalanceInFiat, getAssetBalanceFromFiat } from 'screens/Exchange/utils';
+import { COLLECTIBLES, TOKENS, BTC, defaultFiatCurrency } from 'constants/assetsConstants';
+import { MIN_WBTC_CAFE_AMOUNT } from 'constants/exchangeConstants';
+import { getAssetBalanceFromFiat } from 'screens/Exchange/utils';
 
 import { accountBalancesSelector } from 'selectors/balances';
 import { visibleActiveAccountAssetsWithBalanceSelector } from 'selectors/assets';
@@ -74,6 +75,8 @@ export type ExternalProps = {
   onFormValid?: (boolean) => void,
   customHeader?: React.Node,
   hideLeftAddon?: boolean,
+  disableAssetChange?: boolean,
+  customRates?: Rates,
 };
 
 type InnerProps = {
@@ -95,7 +98,7 @@ const CollectibleWrapper = styled.View`
 
 const SelectorChevron = styled(Icon)`
   font-size: 16px;
-  color: ${themedColors.secondaryText};
+  color: ${({ theme }) => theme.colors.basic030};
 `;
 
 export const getErrorMessage = (
@@ -106,8 +109,10 @@ export const getErrorMessage = (
   const isValid = isValidNumber(amount);
   if (!isValid) {
     return t('error.amount.invalidNumber');
-  } else if (Number(assetBalance) < Number(amount)) {
+  } else if (assetSymbol !== BTC && Number(assetBalance) < Number(amount)) {
     return t('error.amount.notEnoughToken', { token: assetSymbol });
+  } else if (assetSymbol === BTC && +amount && Number(amount) < MIN_WBTC_CAFE_AMOUNT) {
+    return t('wbtcCafe.higherAmount');
   }
   return '';
 };
@@ -138,11 +143,15 @@ export const ValueInputComponent = (props: Props) => {
     onFormValid,
     customHeader,
     hideLeftAddon,
+    disableAssetChange,
+    customRates,
   } = props;
 
   const [valueInFiat, setValueInFiat] = useState<string>('');
   const [displayFiatAmount, setDisplayFiatAmount] = useState<boolean>(false);
   const [errorMessageState, setErrorMessageState] = useState<?string>(null);
+
+  const ratesWithCustomRates = { ...rates, ...customRates };
 
   const assetSymbol = assetData.symbol || '';
   const assetBalance = +formatAmount((customBalances || balances)[assetSymbol]?.balance);
@@ -150,8 +159,8 @@ export const ValueInputComponent = (props: Props) => {
 
   const fiatCurrency = baseFiatCurrency || defaultFiatCurrency;
 
-  const formattedMaxValueInFiat = getFormattedBalanceInFiat(fiatCurrency, maxValue, rates, assetSymbol);
-  const formattedValueInFiat = getFormattedBalanceInFiat(fiatCurrency, value, rates, assetSymbol);
+  const formattedMaxValueInFiat = getFormattedBalanceInFiat(fiatCurrency, maxValue, ratesWithCustomRates, assetSymbol);
+  const formattedValueInFiat = getFormattedBalanceInFiat(fiatCurrency, value, ratesWithCustomRates, assetSymbol);
 
   const handleValueChange = (newValue: string) => {
     let errorMessage = null;
@@ -159,12 +168,13 @@ export const ValueInputComponent = (props: Props) => {
     newValue = newValue.replace(/,/g, '.');
     if (displayFiatAmount) {
       setValueInFiat(newValue);
-      const convertedValue = getAssetBalanceFromFiat(baseFiatCurrency, newValue, rates, assetSymbol).toString();
+      const convertedValue =
+        getAssetBalanceFromFiat(baseFiatCurrency, newValue, ratesWithCustomRates, assetSymbol).toString();
       onValueChange(convertedValue);
 
       errorMessage = getErrorMessage(convertedValue, maxValue, assetSymbol);
     } else {
-      setValueInFiat(getBalanceInFiat(fiatCurrency, newValue, rates, assetSymbol).toString());
+      setValueInFiat(getBalanceInFiat(fiatCurrency, newValue, ratesWithCustomRates, assetSymbol).toString());
       onValueChange(newValue);
       errorMessage = getErrorMessage(newValue, maxValue, assetSymbol);
     }
@@ -184,7 +194,7 @@ export const ValueInputComponent = (props: Props) => {
       newTxFeeInfo?.fee,
       newTxFeeInfo?.gasToken,
     ));
-    const maxValueInFiat = getBalanceInFiat(fiatCurrency, newMaxValue, rates, assetSymbol);
+    const maxValueInFiat = getBalanceInFiat(fiatCurrency, newMaxValue, ratesWithCustomRates, assetSymbol);
     onValueChange((parseFloat(newMaxValue) * (percent / 100)).toString());
     setValueInFiat((maxValueInFiat * (percent / 100)).toString());
   };
@@ -235,7 +245,7 @@ export const ValueInputComponent = (props: Props) => {
         onAssetPress={openAssetSelector}
         labelText={hideMaxSend ? null : `${formatAmount(maxValue, 2)} ${assetSymbol} (${formattedMaxValueInFiat})`}
         onLabelPress={() => !disabled && handleUsePercent(100)}
-        disableAssetSelection={assetsOptions.length <= 1}
+        disableAssetSelection={disableAssetChange || assetsOptions.length <= 1}
       />
     );
   };
@@ -266,7 +276,7 @@ export const ValueInputComponent = (props: Props) => {
     if (onFormValid) {
       onFormValid(!errorMessage);
     }
-  }, [value, assetData]);
+  }, [errorMessage]);
 
   const colors = getThemeColors(theme);
   const { towellie: genericCollectible } = images(theme);
@@ -283,7 +293,7 @@ export const ValueInputComponent = (props: Props) => {
           inputProps={inputProps}
           numeric
           itemHolderStyle={{ borderRadius: 10 }}
-          onRightAddonPress={assetsOptions.length > 1 && openAssetSelector}
+          onRightAddonPress={(disableAssetChange || assetsOptions.length > 1) ? noop : openAssetSelector}
           leftSideText={getLeftSideText()}
           onLeftSideTextPress={() => setDisplayFiatAmount(!displayFiatAmount)}
           rightPlaceholder={displayFiatAmount ? fiatCurrency : assetSymbol}
@@ -295,7 +305,7 @@ export const ValueInputComponent = (props: Props) => {
       )}
       {tokenType === COLLECTIBLES && (
         <CollectibleWrapper>
-          <MediumText medium onPress={openAssetSelector}>{assetData.name}
+          <MediumText medium onPress={disableAssetChange ? noop : openAssetSelector}>{assetData.name}
             <SelectorChevron name="selector" color={colors.labelTertiary} />
           </MediumText>
           <Spacing h={16} />

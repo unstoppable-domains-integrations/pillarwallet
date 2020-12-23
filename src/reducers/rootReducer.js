@@ -67,6 +67,7 @@ import onboardingReducer from './onboardingReducer';
 import cacheReducer from './cacheReducer';
 import transactionEstimateReducer from './transactionEstimateReducer';
 import oceanMarketReducer from './oceanMarketReducer';
+import rariReducer from './rariReducer';
 
 // local types
 import type { OfflineQueueReducerState } from './offlineQueueReducer';
@@ -115,6 +116,7 @@ import type { CacheAction, CacheReducerState } from './cacheReducer';
 import type { OnboardingReducerAction, OnboardingReducerState } from './onboardingReducer.js';
 import type { TransactionEstimateReducerAction, TransactionEstimateReducerState } from './transactionEstimateReducer';
 import type { OceanMarketReducerAction, OceanMarketReducerState } from './oceanMarketReducer';
+import type { RariReducerAction, RariReducerState } from './rariReducer';
 
 export type RootReducerState = {|
   offlineQueue: OfflineQueueReducerState,
@@ -157,6 +159,7 @@ export type RootReducerState = {|
   cache: CacheReducerState,
   transactionEstimate: TransactionEstimateReducerState,
   oceanMarket: OceanMarketReducerState,
+  rari: RariReducerState,
 |};
 
 type RootReducerAction =
@@ -190,7 +193,8 @@ type RootReducerAction =
   | OnboardingReducerAction
   | CacheAction
   | TransactionEstimateReducerAction
-  | OceanMarketReducerAction;
+  | OceanMarketReducerAction
+  | RariReducerAction;
 
 export type GetState = () => RootReducerState;
 export type ThunkAction = (
@@ -243,6 +247,7 @@ const appReducer = combineReducers({
   cache: cacheReducer,
   transactionEstimate: transactionEstimateReducer,
   oceanMarket: oceanMarketReducer,
+  rari: rariReducer,
 });
 
 export const initialState = appReducer(undefined, {});

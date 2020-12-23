@@ -24,10 +24,14 @@ import axios from 'axios';
 import { getEnv } from 'configs/envConfig';
 
 // utils
-import { getEthereumProvider, convertToNominalUnits } from 'utils/common';
+import {
+  getEthereumProvider,
+  convertToNominalUnits,
+  reportLog,
+  reportErrorLog,
+} from 'utils/common';
 import {
   EXCHANGE_URL,
-  EXCHANGE_ADDRESS,
   get1inchCommonUrlParams,
   getResponseData,
   parseAssets,
@@ -54,11 +58,29 @@ const ethProvider = () => {
   return getEthereumProvider(getEnv().NETWORK_PROVIDER);
 };
 
+export const get1InchSpenderAddress = async (): Promise<?string> => {
+  const response = await axios.get(`${EXCHANGE_URL}/approve/spender`).catch((error) => error);
+
+  const spenderAddress = response?.data?.address;
+
+  if (!spenderAddress) {
+    reportLog('get1inchApproveAddress API call failed', { response });
+    return null;
+  }
+
+  return spenderAddress;
+};
+
 const getAllowanceSet = async (clientAddress: string, safeFromAddress: string, fromAsset: Asset) => {
   let allowanceSet = true;
   if (fromAsset.code !== ETH) {
     const assetContract = new ethers.Contract(safeFromAddress, ERC20_CONTRACT_ABI, ethProvider());
-    const allowance: BigNumber = await assetContract.allowance(clientAddress, EXCHANGE_ADDRESS);
+    const exchangeAddress = await get1InchSpenderAddress();
+    if (!exchangeAddress) {
+      reportLog('getAllowanceSet -> get1inchApproveAddress failed');
+      return false;
+    }
+    const allowance: BigNumber = await assetContract.allowance(clientAddress, exchangeAddress);
     allowanceSet = allowance.gt(0);
   }
   return allowanceSet;
@@ -70,9 +92,9 @@ export const get1inchOffer = async (
   quantity: number | string,
   clientAddress: string,
 ): Promise<Offer | null> => {
-  parseAssets([fromAsset, toAsset]);
+  const [fromAssetParsed, toAssetParsed] = parseAssets([fromAsset, toAsset]);
 
-  const { amount, safeToAddress, safeFromAddress } = get1inchCommonUrlParams(fromAsset, toAsset, quantity);
+  const { amount, safeToAddress, safeFromAddress } = get1inchCommonUrlParams(fromAssetParsed, toAssetParsed, quantity);
 
   const url =
     `${EXCHANGE_URL}/quote?fromTokenAddress=${safeFromAddress}&toTokenAddress=${safeToAddress}&amount=${amount}`;
@@ -80,21 +102,24 @@ export const get1inchOffer = async (
   const response = await getResponseData(url, 'Failed to fetch 1inch offer');
   if (!response) return null;
 
-  const allowanceSet = await getAllowanceSet(clientAddress, safeFromAddress, fromAsset);
-
-  const fromTokenAmount = convertToNominalUnits(
-    new BigNumber(fromAsset.decimals),
-    new BigNumber(response.fromTokenAmount),
-  );
-
   const toTokenAmount = convertToNominalUnits(
-    new BigNumber(toAsset.decimals),
+    new BigNumber(toAssetParsed.decimals),
     new BigNumber(response.toTokenAmount),
   );
 
+  // rate from target amount to zero means no pair available
+  if (toTokenAmount.isZero()) return null;
+
+  const allowanceSet = await getAllowanceSet(clientAddress, safeFromAddress, fromAssetParsed);
+
+  const fromTokenAmount = convertToNominalUnits(
+    new BigNumber(fromAssetParsed.decimals),
+    new BigNumber(response.fromTokenAmount),
+  );
+
   const askRate = toTokenAmount.dividedBy(fromTokenAmount);
-  const offer: Offer = parseOffer(fromAsset, toAsset, allowanceSet, askRate.toFixed(), PROVIDER_1INCH);
-  return offer;
+
+  return parseOffer(fromAssetParsed, toAssetParsed, allowanceSet, askRate.toFixed(), PROVIDER_1INCH);
 };
 
 export const create1inchOrder = async (
@@ -111,41 +136,43 @@ export const create1inchOrder = async (
 
   const response = await getResponseData(url, 'Failed to create 1inch order', t('toast.failedToCreateOrder'));
 
-  if (!response) return null;
-  const txCount = await ethProvider().getTransactionCount(clientSendAddress);
+  if (!response || !response?.tx) {
+    reportErrorLog('Failed to create 1inch order after successful response', { response });
+    return null;
+  }
 
-  const txObject = {
-    data: response.data,
-    nonce: txCount.toString(),
-    to: response.to,
-    gasLimit: response.gas || '0',
-    gasPrice: response.gasPrice || '0',
-    chainId: '1',
-    value: response.value,
-  };
+  const { data, to, value } = response.tx;
 
   return {
     orderId: '-',
-    sendToAddress: txObject.to,
-    transactionObj: txObject,
+    sendToAddress: to,
+    transactionObj: {
+      data,
+      to,
+      value,
+    },
   };
 };
 
 export const create1inchAllowanceTx =
   async (fromAssetAddress: string, clientAddress: string): Promise<AllowanceTransaction | null> => {
-    const allowanceTx = await createAllowanceTx(fromAssetAddress, clientAddress, EXCHANGE_ADDRESS);
-    return allowanceTx;
+    const exchangeAddress = await get1InchSpenderAddress();
+    if (!exchangeAddress) {
+      reportLog('create1inchAllowanceTx -> get1inchApproveAddress failed');
+      return null;
+    }
+    return createAllowanceTx(fromAssetAddress, clientAddress, exchangeAddress);
   };
 
 export const fetch1inchSupportedTokens = async (): Promise<string[]> => {
-  const response = await axios.get('https://api.1inch.exchange/v1.1/tokens');
-  const fetchedAssetsSymbols = [];
-  if (response.status === 200 && response.data) {
-    Object.keys(response.data).forEach(key => {
-      if (response.data[key]) {
-        fetchedAssetsSymbols.push(response.data[key].symbol);
-      }
-    });
+  const response = await axios.get(`${EXCHANGE_URL}/tokens`).catch((error) => error);
+
+  const supportedTokens = response?.data?.tokens;
+
+  if (!supportedTokens) {
+    reportLog('fetch1inchSupportedTokens API call failed', { response });
+    return [];
   }
-  return fetchedAssetsSymbols;
+
+  return (Object.values(supportedTokens): any).map(({ symbol }) => symbol);
 };

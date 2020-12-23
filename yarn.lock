@@ -11080,7 +11080,8 @@ js-sha3@0.7.0:
 
 js-sha3@0.8.0, js-sha3@^0.8.0:
   version "0.8.0"
-  resolved "https://pillarproject.jfrog.io/pillarproject/api/npm/npm/js-sha3/-/js-sha3-0.8.0.tgz#b9b7a5da73afad7dedd0f8c463954cbde6818840"
+  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.8.0.tgz#b9b7a5da73afad7dedd0f8c463954cbde6818840"
+  integrity sha512-gF1cRrHhIzNfToc802P800N8PpXS+evLLXfsVpowqmAFR9uwbi89WvXg2QspOmXL8QL86J4T1EpFu+yUkwJY3Q==
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
@@ -15047,7 +15048,7 @@ react-native-branch@^4.2.1:
 
 "react-native-cached-image@https://github.com/pillarwallet/react-native-cached-image":
   version "1.4.5"
-  resolved "https://github.com/pillarwallet/react-native-cached-image#105378788f2b447a7bc43b949bc7835298bf3e6a"
+  resolved "https://github.com/pillarwallet/react-native-cached-image#1ae18ecce5c95e97ca76f2e64737297f6d7c4756"
   dependencies:
     "@react-native-community/netinfo" "^5.6.1"
     crypto-js "3.1.9-1"

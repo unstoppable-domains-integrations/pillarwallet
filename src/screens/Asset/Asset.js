@@ -51,21 +51,17 @@ import { fetchReferralRewardsIssuerAddressesAction } from 'actions/referralsActi
 // constants
 import { EXCHANGE, SEND_TOKEN_FROM_ASSET_FLOW } from 'constants/navigationConstants';
 import { defaultFiatCurrency } from 'constants/assetsConstants';
-import { TRANSACTION_EVENT } from 'constants/historyConstants';
-import {
-  PAYMENT_NETWORK_TX_SETTLEMENT,
-  PAYMENT_NETWORK_ACCOUNT_WITHDRAWAL,
-  PAYMENT_NETWORK_ACCOUNT_DEPLOYMENT,
-} from 'constants/paymentNetworkConstants';
+import { PAYMENT_NETWORK_TX_SETTLEMENT, PAYMENT_NETWORK_ACCOUNT_WITHDRAWAL } from 'constants/paymentNetworkConstants';
 
 // utils
 import { spacing, fontSizes, fontStyles } from 'utils/variables';
-import { themedColors } from 'utils/themes';
+import { getColorByTheme } from 'utils/themes';
 import { formatMoney, formatFiat } from 'utils/common';
 import { getBalance, getRate } from 'utils/assets';
 import { getSmartWalletStatus } from 'utils/smartWallet';
-import { isSWAddress, mapTransactionsHistory } from 'utils/feedData';
+import { isSWAddress } from 'utils/feedData';
 import { isAaveTransactionTag } from 'utils/aave';
+import { getTokenTransactionsFromHistory } from 'utils/history';
 
 // configs
 import assetsConfig from 'configs/assetsConfig';
@@ -112,7 +108,7 @@ const AssetCardWrapper = styled.View`
   padding-bottom: 30px;
   border-top-width: 1px;
   border-bottom-width: 1px;
-  border-color: ${themedColors.border};
+  border-color: ${getColorByTheme({ lightKey: 'basic060', darkKey: 'basic080' })};
   margin-top: 4px;
 `;
 
@@ -132,19 +128,18 @@ const ValueWrapper = styled.View`
 const TokenValue = styled(MediumText)`
   ${fontStyles.giant};
   text-align: center;
-  color: ${({ isSynthetic, theme }) => isSynthetic ? theme.colors.primary : theme.colors.text};
+  color: ${({ isSynthetic, theme }) => isSynthetic ? theme.colors.basic000 : theme.colors.basic010};
 `;
 
 const ValueInFiat = styled(BaseText)`
   ${fontStyles.small};
   text-align: center;
-  color: ${themedColors.text};
 `;
 
 const Disclaimer = styled(BaseText)`
   ${fontStyles.regular};
   text-align: center;
-  color: ${themedColors.negative};
+  color: ${({ theme }) => theme.colors.secondaryAccent240};
   margin-top: 5px;
 `;
 
@@ -161,7 +156,7 @@ const SyntheticAssetIcon = styled(CachedImage)`
   height: 24px;
   margin-right: 4px;
   margin-top: 1px;
-  tint-color: ${themedColors.primary};
+  tint-color: ${({ theme }) => theme.colors.basic000};
 `;
 
 const lightningIcon = require('assets/icons/icon_lightning.png');
@@ -273,15 +268,7 @@ class AssetScreen extends React.Component<Props> {
     const sendingBlockedMessage = smartWalletStatus.sendingBlockedMessage || {};
     const isSendActive = isAssetConfigSendActive && !Object.keys(sendingBlockedMessage).length;
 
-    const tokenTxHistory = history.filter(({ tranType }) => tranType !== 'collectible');
-    const mappedTransactions = mapTransactionsHistory(
-      tokenTxHistory,
-      accounts,
-      TRANSACTION_EVENT,
-    );
-    const tokenTransactions = mappedTransactions
-      .filter(({ asset, tag = '', extra = [] }) => (asset === token && tag !== PAYMENT_NETWORK_ACCOUNT_DEPLOYMENT)
-        || (tag === PAYMENT_NETWORK_TX_SETTLEMENT && extra.find(({ symbol }) => symbol === token)));
+    const tokenTransactions = getTokenTransactionsFromHistory(history, accounts, token);
 
     const mainnetTransactions = tokenTransactions
       .filter(({
