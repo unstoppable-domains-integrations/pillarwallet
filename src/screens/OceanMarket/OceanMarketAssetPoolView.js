@@ -35,13 +35,15 @@ import CircleButton from 'components/CircleButton';
 
 import { fontSizes, fontStyles, spacing } from 'utils/variables';
 import { images } from 'utils/images';
-import { defaultFiatCurrency, OCEAN } from 'constants/assetsConstants';
+import { getTotalUserLiquidityInPool } from 'utils/oceanMarket';
 import { formatFiat, formatMoney } from 'utils/common';
+import { defaultFiatCurrency, OCEAN } from 'constants/assetsConstants';
+import { OCEAN_MARKET_ASSET_ADD_LIQUIDITY, OCEAN_MARKET_ASSET_REMOVE_LIQUIDITY } from 'constants/navigationConstants';
 import { getAccountSinglePoolShareAction } from 'actions/oceanMarketActions';
 import { oceanTokenRateSelector } from 'selectors/oceanMarket';
 import { baseFiatCurrencySelector } from 'selectors';
 
-import { OCEAN_MARKET_ASSET_ADD_LIQUIDITY } from 'constants/navigationConstants';
+import type { SharesByDataAssetId } from 'models/OceanMarket';
 
 type Props = {
   navigation: NavigationScreenProp<*>,
@@ -82,34 +84,23 @@ const PoolSharesLabel = styled(MediumText)`
 const OceanMarketAssetPoolView = (props: Props): React.Node => {
   const { navigation, theme, datasetPriceInFiat } = props;
   const asset = navigation.getParam('asset', {});
-  const { price } = asset;
   const { oceanDataSet } = images(theme);
 
   const dispatch = useDispatch();
 
-  const oceanPoolShares = useSelector(({ oceanMarket }) => oceanMarket?.oceanPoolShares) || {};
-  const fetchingOceanPoolSharesId = useSelector(({ oceanMarket }) => oceanMarket?.fetchingOceanPoolSharesId);
+  const oceanPoolShares: SharesByDataAssetId = useSelector(({ oceanMarket }) => oceanMarket?.oceanPoolShares) || {};
+  const fetchingOceanPoolSharesId: string = useSelector(({ oceanMarket }) => oceanMarket?.fetchingOceanPoolSharesId);
   const oceanRate: number = useSelector(oceanTokenRateSelector);
   const baseFiatCurrency: string = useSelector(baseFiatCurrencySelector) || defaultFiatCurrency;
 
-  const thisPoolShares = oceanPoolShares[asset?.id]?.shares;
+  const thisPoolShares = oceanPoolShares[asset?.id]?.shares || 0;
   const thisPoolSharePercentage = (oceanPoolShares[asset?.id]?.sharesPercentage || 0).toFixed(5);
-  const totalPoolSupply = oceanPoolShares[asset?.id]?.totalPoolSupply || 0;
 
-  const hasThisPoolShares = thisPoolShares > 0;
+  const hasThisPoolShares = parseFloat(thisPoolShares) > 0;
   const isUpdatingThisPoolShares = fetchingOceanPoolSharesId === asset?.id;
 
-  // user's provided liquidity
-  const userOceanBalance =
-    (Number(thisPoolShares) / Number(totalPoolSupply)) * price.ocean;
-  const userDtBalance =
-    (Number(thisPoolShares) / Number(totalPoolSupply)) * price.datatoken;
-  const userLiquidity = {
-    ocean: userOceanBalance,
-    datatoken: userDtBalance,
-  };
+  const totalUserLiquidityInOcean = getTotalUserLiquidityInPool(oceanPoolShares, asset);
 
-  const totalUserLiquidityInOcean = userLiquidity?.ocean + (userLiquidity?.datatoken * price?.value);
   const totalUserLiquidityInOceanInFiat = Number(totalUserLiquidityInOcean) * oceanRate;
   const formattedTotalUserLiquidityInOceanInFiat = formatFiat(totalUserLiquidityInOceanInFiat, baseFiatCurrency);
 
@@ -120,6 +111,10 @@ const OceanMarketAssetPoolView = (props: Props): React.Node => {
 
   const goToAddLiquidity = () => {
     navigation.navigate(OCEAN_MARKET_ASSET_ADD_LIQUIDITY, { asset });
+  };
+
+  const goToRemoveLiquidity = () => {
+    navigation.navigate(OCEAN_MARKET_ASSET_REMOVE_LIQUIDITY, { asset });
   };
 
   const renderPoolSharesValue = (): React.Node => {
@@ -176,7 +171,7 @@ const OceanMarketAssetPoolView = (props: Props): React.Node => {
         />
         <CircleButton
           label={t('button.removeLiquidity')}
-          onPress={() => {}}
+          onPress={goToRemoveLiquidity}
           fontIcon="minus"
           fontIconStyle={{ fontSize: fontSizes.big }}
           disabled={isUpdatingThisPoolShares || !hasThisPoolShares}

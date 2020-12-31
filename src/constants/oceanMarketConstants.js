@@ -37,4 +37,5 @@ export const OCEAN_MARKET_ACTIONS = {
 export const OCEAN_MARKET_TRANSACTION_TYPES = {
   ALLOWANCE: 'allowance',
   ADD_LIQUIDITY: 'add_liquidity',
+  REMOVE_LIQUIDITY: 'remove_liquidity',
 };

@@ -152,7 +152,6 @@ export const ValueInputComponent = (props: Props) => {
   const [errorMessageState, setErrorMessageState] = useState<?string>(null);
 
   const ratesWithCustomRates = { ...rates, ...customRates };
-
   const assetSymbol = assetData.symbol || '';
   const assetBalance = +formatAmount((customBalances || balances)[assetSymbol]?.balance);
   const maxValue = calculateMaxAmount(assetSymbol, assetBalance, txFeeInfo?.fee, txFeeInfo?.gasToken).toString();

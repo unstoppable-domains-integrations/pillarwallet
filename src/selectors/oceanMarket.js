@@ -34,3 +34,9 @@ export const oceanTokenRateSelector = createSelector(
     return getRate(rates, OCEAN, fiatCurrency);
   },
 );
+
+export const oceanTokenRateByCurrencySelector = createSelector(
+  ratesSelector,
+  (rates: Rates) => rates?.[OCEAN] || {},
+);
+

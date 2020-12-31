@@ -18,7 +18,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-import type { OceanMarketAsset, OceanMarketAssetMeta } from 'models/OceanMarket';
+import type { OceanMarketAsset, OceanMarketAssetMeta, SharesByDataAssetId } from 'models/OceanMarket';
 import { parseTokenBigNumberAmount } from 'utils/common';
 import { encodeContractMethod } from 'services/assets';
 import OCEAN_MARKET_POOL_ABI from 'abi/oceanMarketPool.json';
@@ -60,6 +60,21 @@ export const createOceanMarketAddLiquidityAllowanceTransactionData = (
   ]);
 };
 
+export const createOceanMarketRemoveLiquidityTransactionData = (
+  tokenOut: string,
+  amount: number,
+  maximumPoolShares: number,
+  decimals: number,
+): string => {
+  const tokenAmountOut = parseTokenBigNumberAmount(amount, decimals);
+  const maxPoolAmount = parseTokenBigNumberAmount(maximumPoolShares, decimals);
+  return encodeContractMethod(OCEAN_MARKET_POOL_ABI, 'exitswapExternAmountOut', [
+    tokenOut,
+    tokenAmountOut,
+    maxPoolAmount,
+  ]);
+};
+
 export const getOceanMarketAddLiquidityAllowanceTransaction = (amount: number, dataset: OceanMarketAsset) => {
   const data = createOceanMarketAddLiquidityAllowanceTransactionData(
     dataset?.price?.address,
@@ -84,4 +99,35 @@ export const getOceanMarketAddLiquidityTransaction = (token: Asset, value: numbe
     amount: 0,
     symbol: OCEAN,
   };
+};
+
+export const getOceanMarketRemoveLiquidityTransaction = (
+  token: Asset, value: number, maximumPoolShares: number, dataset: OceanMarketAsset,
+) => {
+  const data = createOceanMarketRemoveLiquidityTransactionData(token.address, value, maximumPoolShares, token.decimals);
+
+  return {
+    to: dataset.price.address,
+    data,
+    amount: 0,
+    symbol: OCEAN,
+    contractAddress: getEnv().OCEAN_ADDRESS,
+    decimals: token.decimals,
+  };
+};
+
+export const getTotalUserLiquidityInPool = (oceanPoolShares: SharesByDataAssetId, asset: OceanMarketAsset) => {
+  const relatedAssetPoolShares = oceanPoolShares[asset.id]?.shares;
+  const totalPoolSupply = oceanPoolShares[asset.id]?.totalPoolSupply || 0;
+  const { price } = asset;
+
+  const userOceanBalance =
+    (Number(relatedAssetPoolShares) / Number(totalPoolSupply)) * price.ocean;
+  const userDtBalance =
+    (Number(relatedAssetPoolShares) / Number(totalPoolSupply)) * price.datatoken;
+  const userLiquidity = {
+    ocean: userOceanBalance,
+    datatoken: userDtBalance,
+  };
+  return userLiquidity?.ocean + (userLiquidity?.datatoken * price?.value);
 };

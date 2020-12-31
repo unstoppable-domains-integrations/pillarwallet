@@ -33,7 +33,7 @@ import Table, { TableAmount, TableFee, TableLabel, TableRow, TableTokenAndAmount
 import Button from 'components/Button';
 
 import type { RootReducerState } from 'reducers/rootReducer';
-import { OCEAN, OCEAN_PROTOCOL, POOL_SHARES } from 'constants/assetsConstants';
+import { OCEAN, OCEAN_PROTOCOL, OCEAN_MARKET_POOL_SHARE } from 'constants/assetsConstants';
 import { estimateTransactionAction } from 'actions/transactionEstimateActions';
 import { oceanTokenRateSelector } from 'selectors/oceanMarket';
 import { SEND_TOKEN_PIN_CONFIRM } from 'constants/navigationConstants';
@@ -144,7 +144,7 @@ const OceanMarketAssetAddLiquidityReview = (props: Props): React.Node => {
       >
         <TokenReviewSummary
           assetSymbol={selectedLiquidityToken.symbol}
-          text={t('oceanMarketContent.label.liquidityReview')}
+          text={t('oceanMarketContent.label.liquidityAddReview')}
           amount={value}
         />
         <Spacing h={28} />
@@ -153,7 +153,7 @@ const OceanMarketAssetAddLiquidityReview = (props: Props): React.Node => {
             <TableLabel>{t('oceanMarketContent.label.poolShares')}</TableLabel>
             <TableTokenAndAmount
               amount={poolShares}
-              token={POOL_SHARES}
+              token={OCEAN_MARKET_POOL_SHARE}
               customFiatValue={poolSharesInFiat}
             />
           </TableRow>

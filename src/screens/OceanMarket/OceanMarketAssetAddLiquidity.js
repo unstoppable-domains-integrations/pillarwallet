@@ -34,7 +34,7 @@ import { BaseText } from 'components/Typography';
 import ContainerWithHeader from 'components/Layout/ContainerWithHeader';
 import { Container, ScrollWrapper, Spacing } from 'components/Layout';
 
-import { OCEAN, POOL_SHARES, OCEAN_TOKEN } from 'constants/assetsConstants';
+import { OCEAN, OCEAN_MARKET_POOL_SHARE, OCEAN_TOKEN } from 'constants/assetsConstants';
 import { OCEAN_MARKET_ASSET_ADD_LIQUIDITY_REVIEW } from 'constants/navigationConstants';
 
 import oceanProtocolInstance from 'services/oceanProtocol';
@@ -172,9 +172,9 @@ const OceanMarketAssetAddLiquidity = (props: Props): React.Node => {
             <Spacing h={54} />
             <ValueInput
               assetData={{
-                id: POOL_SHARES,
+                id: OCEAN_MARKET_POOL_SHARE,
                 name: asset?.dataTokenInfo?.name,
-                symbol: POOL_SHARES,
+                symbol: OCEAN_MARKET_POOL_SHARE,
                 imageUrl: oceanDataSet,
               }}
               value={poolSharesValue}

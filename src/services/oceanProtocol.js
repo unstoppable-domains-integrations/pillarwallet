@@ -13,6 +13,7 @@ import type {
   OceanMarketAccount,
   OceanMarketAsset,
   OceanMarketAssetsResponse,
+  TokensReceived,
   TransactionReceipt,
 } from 'models/OceanMarket';
 import type { Connector } from 'models/WalletConnect';
@@ -119,11 +120,12 @@ class OceanProtocolProvider {
     });
   }
 
-  getOceanTokenBalance = async (): Promise<?number> => {
+  getOceanTokenBalance = async (): Promise<number> => {
     const account = await this.getAccount();
     try {
       if (!account) throw new Error(ERROR.NO_ACCOUNT);
-      return (await account.getOceanBalance()) ?? 0;
+      const balance = await account.getOceanBalance();
+      return balance ?? 0;
     } catch (error) {
       reportErrorLog('Unable to get Ocean token balance', { error });
       return Promise.resolve(0);
@@ -234,6 +236,23 @@ class OceanProtocolProvider {
     }
   }
 
+  removeOceanLiquidity = async (
+    poolAddress: string,
+    amount: string,
+    maximumPoolShares: string,
+  ): Promise<?TransactionReceipt> => {
+    try {
+      if (!this.oceanProvider) throw new Error(ERROR.NO_PROVIDER);
+      const account = await this.getAccount();
+      const accountId = account?.id;
+      if (!accountId) throw new Error(ERROR.NO_ACCOUNT_ID);
+      return this.oceanProvider.pool.removeOceanLiquidity(accountId, poolAddress, amount, maximumPoolShares);
+    } catch (error) {
+      reportErrorLog('Unable to add liquidity', { error });
+      return Promise.resolve(null);
+    }
+  }
+
   getMaxAddLiquidity = async (poolAddress: string, tokenAddress: string): Promise<number> => {
     try {
       if (!this.oceanProvider) throw new Error(ERROR.NO_PROVIDER);
@@ -261,21 +280,32 @@ class OceanProtocolProvider {
     }
   }
 
-  getSwapFee = async (poolAddress: string): Promise<number> => {
-    if (!this.oceanProvider) {
-      reportErrorLog('Unable to get max liquidity - no provider');
-      return 0;
-    }
-
+  getRemoveLiquidityExpectedAssetsValue = async (
+    poolAddress: string,
+    poolShares: string,
+    getDataTokens?: boolean,
+  ): Promise<?TokensReceived> => {
     try {
-      const swapFee =
-        await this.oceanProvider.pool.getSwapFee(poolAddress);
-      return Number(swapFee) || 0;
+      if (!this.oceanProvider) throw new Error(ERROR.NO_PROVIDER);
+
+      if (getDataTokens) {
+        return await this.oceanProvider.pool.getTokensRemovedforPoolShares(
+          poolAddress,
+          poolShares,
+        );
+      }
+
+      const expectedOceanToken = await this.oceanProvider.pool.getOceanRemovedforPoolShares(
+        poolAddress,
+        poolShares,
+      );
+
+      return { oceanAmount: expectedOceanToken };
     } catch (error) {
       reportErrorLog('Unable to get max liquidity', { error });
-      return 0;
+      return null;
     }
-  }
+  };
 }
 
 

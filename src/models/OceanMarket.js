@@ -56,3 +56,8 @@ export type SharesByDataAssetId = {
     sharesPercentage: number,
   },
 };
+
+export type TokensReceived = {
+  dtAmount?: string,
+  oceanAmount?: string,
+}

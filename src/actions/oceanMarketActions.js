@@ -113,6 +113,7 @@ export const getAccountOceanTokenBalanceAction = (): ThunkAction => {
   return async (dispatch: Dispatch) => {
     dispatch({ type: OCEAN_MARKET_ACTIONS.START_GETTING_OCEAN_TOKEN_BALANCE });
     const oceanTokenBalance = await oceanProtocolInstance.getOceanTokenBalance();
+
     dispatch({
       type: OCEAN_MARKET_ACTIONS.SET_OCEAN_TOKEN_BALANCE,
       payload: oceanTokenBalance,

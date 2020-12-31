@@ -1442,7 +1442,10 @@
     "rariWithdraw":"{{amount}} {{token}} withdrawn from Rari Capital.",
     "rariTransfer" :"{{amount}} {{token}} transfered to {{recipient}}.",
     "rariClaimRgt": "{{amount}} RGT rewards claimed from Rari Capital.",
-    "rariNotEnoughEthForExchange": "Not enough ETH to pay for exchange fee. Please deposit more ETH."
+    "rariNotEnoughEthForExchange": "Not enough ETH to pay for exchange fee. Please deposit more ETH.",
+    "oceanPools": {
+      "couldNotCalculateExpectedTokens": "Could not calculate expected tokens value."
+    }
   },
 
   "exchangeContent": {
@@ -1515,7 +1518,8 @@
       "reviewTokenAllocation": "Token allocation",
       "reviewFees": "Fees",
       "balance": "Balance",
-      "availableDatatasets": "Available datasets"
+      "availableDatatasets": "Available datasets",
+      "removeLiquidity": "Remove liquidity"
     },
     "label": {
       "exchangeRate": "Exchange rate",
@@ -1524,7 +1528,9 @@
       "poolSharePercentage": "Pool share {{value}}%",
       "poolShares": "Pool shares",
       "available": "Available",
-      "liquidityReview": "You are adding liquidity"
+      "liquidityAddReview": "You are adding liquidity",
+      "liquidityRemoveReview": "You are removing liquidity from {{asset}}",
+      "useOneAsset": "Use one asset"
     },
     "paragraph": {
       "oceanTokenInfo": "The OCEAN utility token is used to stake on data, govern community funding, and buy & sell data. Its supply is disbursed over time to drive near-term growth and long-term sustainability."

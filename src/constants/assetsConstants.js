@@ -78,7 +78,7 @@ export const COLLECTIBLES = 'COLLECTIBLES';
 export const BADGES = 'BADGES';
 export const OCEAN_DATASET = 'OCEAN_DATASET';
 export const OCEAN = 'OCEAN';
-export const POOL_SHARES = 'POOL SHARES';
+export const OCEAN_MARKET_POOL_SHARE = 'POOL SHARES';
 export const OCEAN_PROTOCOL = 'Ocean Protocol';
 export const OCEAN_TOKEN = {
   symbol: OCEAN,

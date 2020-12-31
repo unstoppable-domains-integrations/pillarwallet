@@ -208,7 +208,10 @@ const OceanMarket = (props: Props): React.Node => {
         refreshControl={
           <RefreshControl
             refreshing={isUpdating}
-            onRefresh={() => dispatch(getTopOceanMarketAssetsAction(true))}
+            onRefresh={() => {
+              dispatch(getAccountOceanTokenBalanceAction());
+              dispatch(getTopOceanMarketAssetsAction(true));
+            }}
           />
         }
         scrollEventThrottle={16}

@@ -104,6 +104,15 @@ export const encodeContractMethod = (
   return contractInterface.encodeFunctionData(method, params);
 };
 
+export const decodeContractMethod = (
+  contractAbi: string | Object[],
+  method: string,
+  data: any,
+) => {
+  const contractInterface = new ethers.utils.Interface(contractAbi);
+  return contractInterface.decodeFunctionResult(method, data);
+};
+
 function contractHasMethod(contractCode, encodedMethodName) {
   return contractCode.includes(encodedMethodName);
 }

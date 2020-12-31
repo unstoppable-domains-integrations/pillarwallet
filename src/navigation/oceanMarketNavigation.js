@@ -24,7 +24,9 @@ import { createStackNavigator } from 'react-navigation';
 import OceanMarketScreen from 'screens/OceanMarket';
 import OceanMarketAssetScreen from 'screens/OceanMarket/OceanMarketAsset';
 import OceanMarketAssetAddLiquidityScreen from 'screens/OceanMarket/OceanMarketAssetAddLiquidity';
+import OceanMarketAssetRemoveLiquidityScreen from 'screens/OceanMarket/OceanMarketAssetRemoveLiquidity';
 import OceanMarketAssetAddLiquidityReviewScreen from 'screens/OceanMarket/OceanMarketAssetAddLiquidityReview';
+import OceanMarketAssetRemoveLiquidityReviewScreen from 'screens/OceanMarket/OceanMarketAssetRemoveLiquidityReview';
 import SendTokenPinConfirmScreen from 'screens/SendToken/SendTokenPinConfirmScreen';
 import SendTokenTransactionScreen from 'screens/SendToken/SendTokenTransaction';
 
@@ -33,9 +35,10 @@ import {
   OCEAN_MARKET,
   OCEAN_MARKET_ASSET,
   OCEAN_MARKET_ASSET_ADD_LIQUIDITY,
+  OCEAN_MARKET_ASSET_REMOVE_LIQUIDITY,
   OCEAN_MARKET_ASSET_ADD_LIQUIDITY_REVIEW,
   SEND_TOKEN_PIN_CONFIRM,
-  SEND_TOKEN_TRANSACTION,
+  SEND_TOKEN_TRANSACTION, OCEAN_MARKET_ASSET_REMOVE_LIQUIDITY_REVIEW,
 } from 'constants/navigationConstants';
 
 import { hideTabNavigatorOnChildView, StackNavigatorConfig } from './configs';
@@ -45,7 +48,9 @@ const oceanMarketFlow = createStackNavigator(
     [OCEAN_MARKET]: OceanMarketScreen,
     [OCEAN_MARKET_ASSET]: OceanMarketAssetScreen,
     [OCEAN_MARKET_ASSET_ADD_LIQUIDITY]: OceanMarketAssetAddLiquidityScreen,
+    [OCEAN_MARKET_ASSET_REMOVE_LIQUIDITY]: OceanMarketAssetRemoveLiquidityScreen,
     [OCEAN_MARKET_ASSET_ADD_LIQUIDITY_REVIEW]: OceanMarketAssetAddLiquidityReviewScreen,
+    [OCEAN_MARKET_ASSET_REMOVE_LIQUIDITY_REVIEW]: OceanMarketAssetRemoveLiquidityReviewScreen,
     [SEND_TOKEN_PIN_CONFIRM]: SendTokenPinConfirmScreen,
     [SEND_TOKEN_TRANSACTION]: SendTokenTransactionScreen,
   },
