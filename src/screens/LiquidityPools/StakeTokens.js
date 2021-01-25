@@ -46,19 +46,18 @@ import { getPoolStats } from 'utils/liquidityPools';
 import type { Asset } from 'models/Asset';
 import type { TransactionFeeInfo } from 'models/Transaction';
 import type { Dispatch, RootReducerState } from 'reducers/rootReducer';
-import type { LiquidityPool } from 'models/LiquidityPools';
+import type { LiquidityPoolWithRewards } from 'models/LiquidityPools';
 import type { LiquidityPoolsReducerState } from 'reducers/liquidityPoolsReducer';
 
 
 type Props = {
   navigation: NavigationScreenProp<*>,
-  supportedAssets: Asset[],
   isEstimating: boolean,
   feeInfo: ?TransactionFeeInfo,
   estimateErrorMessage: ?string,
   resetEstimateTransaction: () => void,
   calculateStakeTransactionEstimate: (
-    pool: LiquidityPool,
+    pool: LiquidityPoolWithRewards,
     tokenAmount: string,
     tokenAsset: Asset,
   ) => void,
@@ -82,7 +81,6 @@ const FooterInner = styled.View`
 
 const StakeTokensScreen = ({
   navigation,
-  supportedAssets,
   feeInfo,
   isEstimating,
   estimateErrorMessage,
@@ -96,7 +94,7 @@ const StakeTokensScreen = ({
 
   const { pool } = navigation.state.params;
   const poolStats = getPoolStats(pool, liquidityPoolsReducer);
-  const assetData = supportedAssets.find(asset => asset.symbol === pool.symbol);
+  const assetData = pool.poolTokenData;
   const [assetValue, setAssetValue] = useState('');
   const [isValid, setIsValid] = useState(false);
 
@@ -175,11 +173,9 @@ const StakeTokensScreen = ({
 };
 
 const mapStateToProps = ({
-  assets: { supportedAssets },
   transactionEstimate: { feeInfo, isEstimating, errorMessage: estimateErrorMessage },
   liquidityPools: liquidityPoolsReducer,
 }: RootReducerState): $Shape<Props> => ({
-  supportedAssets,
   isEstimating,
   feeInfo,
   estimateErrorMessage,
@@ -189,7 +185,7 @@ const mapStateToProps = ({
 const mapDispatchToProps = (dispatch: Dispatch): $Shape<Props> => ({
   resetEstimateTransaction: () => dispatch(resetEstimateTransactionAction()),
   calculateStakeTransactionEstimate: debounce((
-    pool: LiquidityPool,
+    pool: LiquidityPoolWithRewards,
     tokenAmount: string,
     tokenAsset: Asset,
   ) => dispatch(calculateStakeTransactionEstimateAction(pool, tokenAmount, tokenAsset)), 500),

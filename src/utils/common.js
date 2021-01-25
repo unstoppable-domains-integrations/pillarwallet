@@ -699,7 +699,7 @@ export const formatBigAmount = (amount: number) => {
   if (amount >= 1e3) {
     return `${Math.round(amount / 1e3)}K`; // eslint-disable-line i18next/no-literal-string
   }
-  return `${Math.round(amount)}`;
+  return `${amount.toFixed(2)}`;
 };
 
 export const formatBigFiatAmount = (amount: number, fiatCurrency: string) => {

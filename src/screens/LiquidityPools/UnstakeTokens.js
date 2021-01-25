@@ -47,7 +47,7 @@ import type { Asset } from 'models/Asset';
 import type { TransactionFeeInfo } from 'models/Transaction';
 import type { Dispatch, RootReducerState } from 'reducers/rootReducer';
 import type { LiquidityPoolsReducerState } from 'reducers/liquidityPoolsReducer';
-import type { LiquidityPool } from 'models/LiquidityPools';
+import type { LiquidityPoolWithRewards } from 'models/LiquidityPools';
 
 
 type Props = {
@@ -57,7 +57,7 @@ type Props = {
   feeInfo: ?TransactionFeeInfo,
   estimateErrorMessage: ?string,
   resetEstimateTransaction: () => void,
-  calculateUnstakeTransactionEstimate: (pool: LiquidityPool, tokenAmount: string) => void,
+  calculateUnstakeTransactionEstimate: (pool: LiquidityPoolWithRewards, tokenAmount: string) => void,
   liquidityPoolsReducer: LiquidityPoolsReducerState,
 };
 
@@ -78,7 +78,6 @@ const FooterInner = styled.View`
 
 const UnstakeTokensScreen = ({
   navigation,
-  supportedAssets,
   feeInfo,
   isEstimating,
   estimateErrorMessage,
@@ -92,7 +91,7 @@ const UnstakeTokensScreen = ({
 
   const { pool } = navigation.state.params;
   const poolStats = getPoolStats(pool, liquidityPoolsReducer);
-  const assetData = supportedAssets.find(asset => asset.symbol === pool.symbol);
+  const assetData = pool.poolTokenData;
   const [assetValue, setAssetValue] = useState('');
   const [isValid, setIsValid] = useState(false);
 
@@ -167,11 +166,9 @@ const UnstakeTokensScreen = ({
 };
 
 const mapStateToProps = ({
-  assets: { supportedAssets },
   transactionEstimate: { feeInfo, isEstimating, errorMessage: estimateErrorMessage },
   liquidityPools: liquidityPoolsReducer,
 }: RootReducerState): $Shape<Props> => ({
-  supportedAssets,
   isEstimating,
   feeInfo,
   estimateErrorMessage,
@@ -181,7 +178,7 @@ const mapStateToProps = ({
 const mapDispatchToProps = (dispatch: Dispatch): $Shape<Props> => ({
   resetEstimateTransaction: () => dispatch(resetEstimateTransactionAction()),
   calculateUnstakeTransactionEstimate: debounce((
-    pool: LiquidityPool,
+    pool: LiquidityPoolWithRewards,
     tokenAmount: string,
   ) => dispatch(calculateUnstakeTransactionEstimateAction(pool, tokenAmount)), 500),
 });

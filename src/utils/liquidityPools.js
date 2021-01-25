@@ -44,8 +44,9 @@ import {
 } from 'utils/uniswap';
 import ERC20_CONTRACT_ABI from 'abi/erc20.json';
 import UNISWAP_ROUTER_ABI from 'abi/uniswapRouter.json';
+import { LIQUIDITY_POOLS_TYPES } from 'models/LiquidityPools';
 import type { Asset } from 'models/Asset';
-import type { LiquidityPool, LiquidityPoolStats } from 'models/LiquidityPools';
+import type { LiquidityPool, LiquidityPoolStats, LiquidityPoolWithRewards, UnipoolLiquidityPool } from 'models/LiquidityPools';
 import type { Transaction } from 'models/Transaction';
 import type { LiquidityPoolsReducerState } from 'reducers/liquidityPoolsReducer';
 
@@ -279,7 +280,7 @@ export const getRemoveLiquidityTransactions = async (
 };
 
 export const getStakeTransactions = async (
-  pool: LiquidityPool,
+  pool: LiquidityPoolWithRewards,
   sender: string,
   amount: string,
   token: Asset,
@@ -299,7 +300,7 @@ export const getStakeTransactions = async (
 };
 
 export const getUnstakeTransaction = (
-  pool: LiquidityPool,
+  pool: LiquidityPoolWithRewards,
   sender: string,
   amount: string,
   txFeeInWei?: BigNumber,
@@ -318,7 +319,7 @@ export const getUnstakeTransaction = (
 };
 
 export const getClaimRewardsTransaction = (
-  pool: LiquidityPool,
+  pool: LiquidityPoolWithRewards,
   sender: string,
   amountToClaim: number,
   txFeeInWei?: BigNumber,
@@ -375,8 +376,12 @@ export const getPoolStats = (
     [tokenSymbols[1]]: pairData.reserve1 / pairData.totalSupply,
   };
 
-  const { unipoolAddress } = pool;
-  const unipoolData = liquidityPoolsReducer.unipoolData[unipoolAddress];
+  let unipoolData = null;
+
+  if (pool.type === LIQUIDITY_POOLS_TYPES.UNIPOOL) {
+    const { unipoolAddress } = pool;
+    unipoolData = liquidityPoolsReducer.unipoolData[unipoolAddress];
+  }
 
   const history = historyData.map(dataPoint => ({
     date: new Date(dataPoint.date * 1000),
@@ -568,20 +573,24 @@ const mapTransactionsHistoryWithUnipool = async (
   }`;
   /* eslint-enable i18next/no-literal-string */
 
-  const responses = await Promise.all(LIQUIDITY_POOLS().map(pool => callSubgraph(pool.unipoolSubgraphName, query)));
+  const unipoolLiquidityPools =
+    ((LIQUIDITY_POOLS().filter(pool => pool.type === LIQUIDITY_POOLS_TYPES.UNIPOOL): any): UnipoolLiquidityPool[]);
+
+  const responses = await Promise.all(unipoolLiquidityPools.map(pool => callSubgraph(pool.unipoolSubgraphName, query)));
+
   const mappedHistory = transactionHistory.reduce((
     transactions,
     transaction,
     transactionIndex,
   ) => {
     const { to } = transaction;
-    const liquidityPoolIndex = LIQUIDITY_POOLS().findIndex(pool => addressesEqual(pool.unipoolAddress, to));
+    const liquidityPoolIndex = unipoolLiquidityPools.findIndex(pool => addressesEqual(pool.unipoolAddress, to));
     if (liquidityPoolIndex !== -1) {
       transactions[transactionIndex] = buildUnipoolTransaction(
         accountAddress,
         transaction,
         responses[liquidityPoolIndex],
-        LIQUIDITY_POOLS()[liquidityPoolIndex],
+        unipoolLiquidityPools[liquidityPoolIndex],
       );
     }
     return transactions;

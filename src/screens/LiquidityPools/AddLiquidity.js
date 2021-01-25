@@ -130,12 +130,9 @@ const AddLiquidityScreen = ({
   const poolStats = getPoolStats(pool, liquidityPoolsReducer);
 
   const tokensData = pool.tokensProportions.map(({ symbol }) => supportedAssets.find(asset => asset.symbol === symbol));
-  const poolTokenData = supportedAssets.find(asset => asset.symbol === pool.symbol);
 
   useEffect(() => {
     if (!assetsValues.every(f => !!parseFloat(f)) || !fieldsValid.every(f => f)) return;
-    const erc20Token = tokensData[1];
-    if (!erc20Token) return;
     calculateAddLiquidityTransactionEstimate(
       pool,
       assetsValues,
@@ -200,7 +197,7 @@ const AddLiquidityScreen = ({
     LIQUIDITY_POOLS_ADD_LIQUIDITY_REVIEW,
     {
       tokensData,
-      poolToken: poolTokenData,
+      poolToken: pool.poolTokenData,
       tokensValues: assetsValues,
       poolTokenValue: poolTokenAmount,
       shareOfPool,
@@ -247,8 +244,8 @@ const AddLiquidityScreen = ({
         {renderTokenInput(0)}
         <StyledIcon name="equal" />
         <ValueInput
-          assetData={poolTokenData}
-          customAssets={[poolTokenData]}
+          assetData={pool.poolTokenData}
+          customAssets={[pool.poolTokenData]}
           value={poolTokenAmount}
           disabled
           hideMaxSend

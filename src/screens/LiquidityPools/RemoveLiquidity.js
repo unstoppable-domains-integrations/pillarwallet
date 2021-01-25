@@ -123,14 +123,11 @@ const AddLiquidityScreen = ({
   const tokensData = pool.tokensProportions
     .map(({ symbol: tokenSymbol }) => supportedAssets.find(({ symbol }) => symbol === tokenSymbol));
 
-  const poolTokenData = supportedAssets.find(asset => asset.symbol === pool.symbol);
-
   useEffect(() => {
     if (
       !parseFloat(poolTokenAmount) ||
       !obtainedTokenFieldsValid.every(f => f) ||
-      !poolTokenFieldValid ||
-      !poolTokenData
+      !poolTokenFieldValid
     ) {
       return;
     }
@@ -140,7 +137,7 @@ const AddLiquidityScreen = ({
     calculateRemoveLiquidityTransactionEstimate(
       pool,
       poolTokenAmount,
-      poolTokenData,
+      pool.poolTokenData,
       tokensData,
       obtainedAssetsValues,
     );
@@ -173,7 +170,7 @@ const AddLiquidityScreen = ({
   };
 
   const renderTokenInput = (tokenIndex: number) => {
-    const poolTokenSymbol = poolTokenData?.symbol;
+    const poolTokenSymbol = pool.poolTokenData.symbol;
     if (!poolTokenSymbol) return null;
     const maxAmountBurned = poolStats?.userLiquidityTokenBalance || 0;
     const totalAmount = parseFloat(poolStats?.totalSupply);
@@ -233,17 +230,17 @@ const AddLiquidityScreen = ({
     LIQUIDITY_POOLS_REMOVE_LIQUIDITY_REVIEW,
     {
       obtainedTokensData: tokensData,
-      poolToken: poolTokenData,
+      poolToken: pool.poolTokenData,
       obtainedTokensValues: obtainedAssetsValues,
       poolTokenValue: poolTokenAmount,
       pool,
     },
   );
 
-  const poolTokenCustomBalances = poolTokenData && {
-    [poolTokenData.symbol]: {
+  const poolTokenCustomBalances = {
+    [pool.poolTokenData.symbol]: {
       balance: poolStats?.userLiquidityTokenBalance,
-      symbol: poolTokenData.symbol,
+      symbol: pool.poolTokenData.symbol,
     },
   };
 
@@ -282,8 +279,8 @@ const AddLiquidityScreen = ({
     >
       <MainContainer>
         <ValueInput
-          assetData={poolTokenData}
-          customAssets={[poolTokenData]}
+          assetData={pool.poolTokenData}
+          customAssets={[pool.poolTokenData]}
           value={poolTokenAmount}
           onValueChange={onPoolTokenAmountChange}
           onFormValid={setPoolTokenFieldValid}

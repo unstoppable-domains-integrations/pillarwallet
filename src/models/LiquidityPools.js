@@ -19,35 +19,50 @@
 */
 
 export const LIQUIDITY_POOLS_TYPES = {
-  UNIPOOL: ('UNIPOOL': 'UNIPOOL'),
+  UNIPOOL: 'UNIPOOL',
+  UNISWAP: 'UNISWAP',
 };
 
 export type LiquidityPoolType = $Values<typeof LIQUIDITY_POOLS_TYPES>;
 
 export type LiquidityPoolBase = {
-  type: LiquidityPoolType,
   name: string,
-  symbol: string,
   tokensProportions: {
     symbol: string,
     proportion: number
   }[],
+  iconUrl: string,
+  poolTokenData: {
+    name: string,
+    symbol: string,
+    iconUrl?: string,
+    address: string,
+  }
+};
+
+export type LiquidityPoolWithRewardsBase = LiquidityPoolBase & {
   rewards: {
     symbol: string,
     amount: number,
   }[],
-  iconUrl: string,
   rewardsEnabled: boolean,
-};
+}
 
-export type UnipoolLiquidityPool = LiquidityPoolBase & {
-  type: typeof LIQUIDITY_POOLS_TYPES.UNIPOOL,
+export type UniswapLiquidityPool = LiquidityPoolBase & {
+  type: 'UNISWAP',
+  uniswapPairAddress: string,
+}
+
+export type UnipoolLiquidityPool = LiquidityPoolWithRewardsBase & {
+  type: 'UNIPOOL',
   uniswapPairAddress: string,
   unipoolAddress: string,
   unipoolSubgraphName: string,
 };
 
-export type LiquidityPool = UnipoolLiquidityPool;
+export type LiquidityPool = UniswapLiquidityPool | UnipoolLiquidityPool;
+
+export type LiquidityPoolWithRewards = UnipoolLiquidityPool;
 
 export type LiquidityPoolStats = {
   currentPrice: number,

@@ -209,7 +209,7 @@ const LiquidityPoolsScreen = ({
             <VerticalDivider />
             <CardColumn>
               <BaseText big>
-                {formatFiat(convertUSDToFiat(poolStats.currentPrice, rates, fiatCurrency), fiatCurrency)}
+                {formatBigFiatAmount(convertUSDToFiat(poolStats.currentPrice, rates, fiatCurrency), fiatCurrency)}
               </BaseText>
               <BaseText small secondary>{t('liquidityPoolsContent.label.price')}</BaseText>
             </CardColumn>
@@ -256,7 +256,7 @@ const LiquidityPoolsScreen = ({
       <TouchableOpacity onPress={() => goToPoolDashboard(pool)}>
         <ListItemWithImage
           label={pool.name}
-          subtext={t('tokenValue', { token: pool.symbol, value: formatAmount(balance) })}
+          subtext={t('tokenValue', { token: pool.poolTokenData.symbol, value: formatAmount(balance) })}
           itemImageUrl={`${getEnv().SDK_PROVIDER}/${pool.iconUrl}?size=3`}
           customAddon={(
             <View style={{ alignItems: 'flex-end' }}>
@@ -271,8 +271,6 @@ const LiquidityPoolsScreen = ({
 
   const renderPurchasedPool = ({ item: pool, index }) => {
     const poolStats = poolsStats[index];
-    const poolToken = supportedAssets.find(({ symbol }) => symbol === pool.symbol);
-    if (!poolToken) return null;
     const balance = poolStats.userLiquidityTokenBalance;
 
     const { currentPrice } = poolStats;

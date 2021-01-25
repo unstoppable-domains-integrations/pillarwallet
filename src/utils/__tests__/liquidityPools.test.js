@@ -23,9 +23,31 @@ import {
   calculateProportionalAssetValues,
   calculateProportionalRemoveLiquidityAssetValues,
 } from 'utils/liquidityPools';
-import { LIQUIDITY_POOLS } from 'constants/liquidityPoolsConstants';
+import { LIQUIDITY_POOLS_TYPES } from 'models/LiquidityPools';
 
-const unipoolPool = LIQUIDITY_POOLS()[0];
+const unipoolPool = {
+  name: 'Uniswap v2 ETH/PLR',
+  type: LIQUIDITY_POOLS_TYPES.UNIPOOL,
+  tokensProportions: [
+    { symbol: 'ETH', proportion: 0.5, progressBarColor: '#497391' },
+    { symbol: 'PLR', proportion: 0.5, progressBarColor: '#00ff24' },
+  ],
+  rewards: [
+    { symbol: 'PLR', amount: 49999 },
+  ],
+  uniswapPairAddress: '0xae2d4004241254aed3f93873604d39883c8259f0',
+  unipoolAddress: '0x32105017918Cb9CD9A5f21fd6984Ee7DC82B9E7E',
+  unipoolSubgraphName: 'graszka22/unipool-plr-eth',
+  iconUrl: 'asset/images/tokens/icons/ethplruniColor.png',
+  rewardsEnabled: true,
+  poolTokenData: {
+    name: 'ETH-PLR Uniswap V2 LP',
+    symbol: 'UNI-V2',
+    decimals: 18,
+    address: '0xae2d4004241254aed3f93873604d39883c8259f0',
+    iconUrl: 'asset/images/tokens/icons/ethplruniColor.png',
+  },
+};
 
 const liquidityPoolsReducerMock = {
   unipoolData: {

@@ -48,7 +48,7 @@ import type { TransactionFeeInfo } from 'models/Transaction';
 import type { RootReducerState, Dispatch } from 'reducers/rootReducer';
 import type { Balances } from 'models/Asset';
 import type { LiquidityPoolsReducerState } from 'reducers/liquidityPoolsReducer';
-import type { LiquidityPool } from 'models/LiquidityPools';
+import type { LiquidityPoolWithRewards } from 'models/LiquidityPools';
 
 
 type Props = {
@@ -57,7 +57,7 @@ type Props = {
   accountAddress: string,
   balances: Balances,
   resetEstimateTransaction: () => void,
-  calculateClaimRewardsTransactionEstimate: (pool: LiquidityPool, amountToClaim: number) => void,
+  calculateClaimRewardsTransactionEstimate: (pool: LiquidityPoolWithRewards, amountToClaim: number) => void,
   isEstimating: boolean,
   estimateErrorMessage: ?string,
   liquidityPoolsReducer: LiquidityPoolsReducerState,
@@ -197,7 +197,7 @@ const combinedMapStateToProps = (state: RootReducerState): $Shape<Props> => ({
 
 const mapDispatchToProps = (dispatch: Dispatch): $Shape<Props> => ({
   resetEstimateTransaction: () => dispatch(resetEstimateTransactionAction()),
-  calculateClaimRewardsTransactionEstimate: (pool: LiquidityPool, amountToClaim: number) =>
+  calculateClaimRewardsTransactionEstimate: (pool: LiquidityPoolWithRewards, amountToClaim: number) =>
     dispatch(calculateClaimRewardsTransactionEstimateAction(pool, amountToClaim)),
 });
 
