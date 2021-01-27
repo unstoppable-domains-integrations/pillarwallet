@@ -56,8 +56,8 @@ const main = async () => {
       const symbol0 = mapSymbol(pair.token0.symbol);
       const symbol1 = mapSymbol(pair.token1.symbol);
 
-      console.log(`
-      {
+      console.log(
+        `     {
         name: 'Uniswap v2 ${symbol0}/${symbol1}',
         type: LIQUIDITY_POOLS_TYPES.UNISWAP,
         tokensProportions: [
@@ -70,9 +70,9 @@ const main = async () => {
           symbol: 'UNI-V2',
           decimals: 18,
           address: '${pair.id}',
-        }
-        iconUrl: '',
-      },`);
+        },
+      },`,
+      );
     });
   } catch (error) {
     console.error('🔴 Script Error 🔴', error);

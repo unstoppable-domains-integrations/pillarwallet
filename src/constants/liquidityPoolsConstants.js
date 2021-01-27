@@ -108,21 +108,6 @@ export const LIQUIDITY_POOLS = (): LiquidityPool[] => getEnv().ENVIRONMENT === S
       },
     },
     {
-      name: 'Uniswap v2 ETH/USDT',
-      type: LIQUIDITY_POOLS_TYPES.UNISWAP,
-      tokensProportions: [
-        { symbol: 'ETH', proportion: 0.5 },
-        { symbol: 'USDT', proportion: 0.5 },
-      ],
-      uniswapPairAddress: '0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852',
-      poolTokenData: {
-        name: 'ETH-USDT Uniswap V2 LP',
-        symbol: 'UNI-V2',
-        decimals: 18,
-        address: '0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852',
-      },
-    },
-    {
       name: 'Uniswap v2 USDC/ETH',
       type: LIQUIDITY_POOLS_TYPES.UNISWAP,
       tokensProportions: [
@@ -135,6 +120,21 @@ export const LIQUIDITY_POOLS = (): LiquidityPool[] => getEnv().ENVIRONMENT === S
         symbol: 'UNI-V2',
         decimals: 18,
         address: '0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc',
+      },
+    },
+    {
+      name: 'Uniswap v2 ETH/USDT',
+      type: LIQUIDITY_POOLS_TYPES.UNISWAP,
+      tokensProportions: [
+        { symbol: 'ETH', proportion: 0.5 },
+        { symbol: 'USDT', proportion: 0.5 },
+      ],
+      uniswapPairAddress: '0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852',
+      poolTokenData: {
+        name: 'ETH-USDT Uniswap V2 LP',
+        symbol: 'UNI-V2',
+        decimals: 18,
+        address: '0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852',
       },
     },
     {
@@ -213,21 +213,6 @@ export const LIQUIDITY_POOLS = (): LiquidityPool[] => getEnv().ENVIRONMENT === S
       },
     },
     {
-      name: 'Uniswap v2 SUSHI/ETH',
-      type: LIQUIDITY_POOLS_TYPES.UNISWAP,
-      tokensProportions: [
-        { symbol: 'SUSHI', proportion: 0.5 },
-        { symbol: 'ETH', proportion: 0.5 },
-      ],
-      uniswapPairAddress: '0xce84867c3c02b05dc570d0135103d3fb9cc19433',
-      poolTokenData: {
-        name: 'SUSHI-ETH Uniswap V2 LP',
-        symbol: 'UNI-V2',
-        decimals: 18,
-        address: '0xce84867c3c02b05dc570d0135103d3fb9cc19433',
-      },
-    },
-    {
       name: 'Uniswap v2 LINK/ETH',
       type: LIQUIDITY_POOLS_TYPES.UNISWAP,
       tokensProportions: [
@@ -240,6 +225,21 @@ export const LIQUIDITY_POOLS = (): LiquidityPool[] => getEnv().ENVIRONMENT === S
         symbol: 'UNI-V2',
         decimals: 18,
         address: '0xa2107fa5b38d9bbd2c461d6edf11b11a50f6b974',
+      },
+    },
+    {
+      name: 'Uniswap v2 SUSHI/ETH',
+      type: LIQUIDITY_POOLS_TYPES.UNISWAP,
+      tokensProportions: [
+        { symbol: 'SUSHI', proportion: 0.5 },
+        { symbol: 'ETH', proportion: 0.5 },
+      ],
+      uniswapPairAddress: '0xce84867c3c02b05dc570d0135103d3fb9cc19433',
+      poolTokenData: {
+        name: 'SUSHI-ETH Uniswap V2 LP',
+        symbol: 'UNI-V2',
+        decimals: 18,
+        address: '0xce84867c3c02b05dc570d0135103d3fb9cc19433',
       },
     },
     {
@@ -348,21 +348,6 @@ export const LIQUIDITY_POOLS = (): LiquidityPool[] => getEnv().ENVIRONMENT === S
       },
     },
     {
-      name: 'Uniswap v2 PICKLE/ETH',
-      type: LIQUIDITY_POOLS_TYPES.UNISWAP,
-      tokensProportions: [
-        { symbol: 'PICKLE', proportion: 0.5 },
-        { symbol: 'ETH', proportion: 0.5 },
-      ],
-      uniswapPairAddress: '0xdc98556ce24f007a5ef6dc1ce96322d65832a819',
-      poolTokenData: {
-        name: 'PICKLE-ETH Uniswap V2 LP',
-        symbol: 'UNI-V2',
-        decimals: 18,
-        address: '0xdc98556ce24f007a5ef6dc1ce96322d65832a819',
-      },
-    },
-    {
       name: 'Uniswap v2 SNX/ETH',
       type: LIQUIDITY_POOLS_TYPES.UNISWAP,
       tokensProportions: [
@@ -378,6 +363,36 @@ export const LIQUIDITY_POOLS = (): LiquidityPool[] => getEnv().ENVIRONMENT === S
       },
     },
     {
+      name: 'Uniswap v2 PICKLE/ETH',
+      type: LIQUIDITY_POOLS_TYPES.UNISWAP,
+      tokensProportions: [
+        { symbol: 'PICKLE', proportion: 0.5 },
+        { symbol: 'ETH', proportion: 0.5 },
+      ],
+      uniswapPairAddress: '0xdc98556ce24f007a5ef6dc1ce96322d65832a819',
+      poolTokenData: {
+        name: 'PICKLE-ETH Uniswap V2 LP',
+        symbol: 'UNI-V2',
+        decimals: 18,
+        address: '0xdc98556ce24f007a5ef6dc1ce96322d65832a819',
+      },
+    },
+    {
+      name: 'Uniswap v2 AAVE/ETH',
+      type: LIQUIDITY_POOLS_TYPES.UNISWAP,
+      tokensProportions: [
+        { symbol: 'AAVE', proportion: 0.5 },
+        { symbol: 'ETH', proportion: 0.5 },
+      ],
+      uniswapPairAddress: '0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f',
+      poolTokenData: {
+        name: 'AAVE-ETH Uniswap V2 LP',
+        symbol: 'UNI-V2',
+        decimals: 18,
+        address: '0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f',
+      },
+    },
+    {
       name: 'Uniswap v2 USDC/USDT',
       type: LIQUIDITY_POOLS_TYPES.UNISWAP,
       tokensProportions: [
@@ -390,21 +405,6 @@ export const LIQUIDITY_POOLS = (): LiquidityPool[] => getEnv().ENVIRONMENT === S
         symbol: 'UNI-V2',
         decimals: 18,
         address: '0x3041cbd36888becc7bbcbc0045e3b1f144466f5f',
-      },
-    },
-    {
-      name: 'Uniswap v2 WISE/ETH',
-      type: LIQUIDITY_POOLS_TYPES.UNISWAP,
-      tokensProportions: [
-        { symbol: 'WISE', proportion: 0.5 },
-        { symbol: 'ETH', proportion: 0.5 },
-      ],
-      uniswapPairAddress: '0x21b8065d10f73ee2e260e5b47d3344d3ced7596e',
-      poolTokenData: {
-        name: 'WISE-ETH Uniswap V2 LP',
-        symbol: 'UNI-V2',
-        decimals: 18,
-        address: '0x21b8065d10f73ee2e260e5b47d3344d3ced7596e',
       },
     },
   ];
